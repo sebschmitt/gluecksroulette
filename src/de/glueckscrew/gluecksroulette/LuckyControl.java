@@ -1,12 +1,11 @@
 package de.glueckscrew.gluecksroulette;
 
 /**
- * Diese Klasse stellt die zentrale Verwaltungskomponente des Projekts da
- * Zudem beinhaltet sie die Main-Funktion
+ * This class represents the central control component
+ * It also contains the main method
  *
  * @author Sebastian Schmitt
  */
-
 public class LuckyControl {
 
 	/**
