@@ -8,14 +8,14 @@ package de.glueckscrew.gluecksroulette;
  */
 public class LuckyControl {
 
-	/**
-	 * private to make sure we get only called from {@link #main(String[])}
-	 */
-	private LuckyControl() {
+    /**
+     * private to make sure we get only called from {@link #main(String[])}
+     */
+    private LuckyControl() {
 
-	}
+    }
 
-	public static void main(String[] args) {
-		new LuckyControl();
-	}
+    public static void main(String[] args) {
+        new LuckyControl();
+    }
 }
