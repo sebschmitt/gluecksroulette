@@ -9,7 +9,7 @@ package de.glueckscrew.gluecksroulette;
 public class LuckyControl {
 
 	/**
-	 * private to make sure we get only called from {@link #main(String[]))
+	 * private to make sure we get only called from {@link #main(String[])}
 	 */
 	private LuckyControl() {
 
