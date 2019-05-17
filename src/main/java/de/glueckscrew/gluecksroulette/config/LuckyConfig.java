@@ -3,6 +3,7 @@ package de.glueckscrew.gluecksroulette.config;
 import lombok.Getter;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ public class LuckyConfig {
     public LuckyConfig() {
         values = new HashMap<>();
 
-        String fileContent = ""; // Magically coming from Mr dahlitz
+        String fileContent = "\n"; // Magically coming from Mr dahlitz
 
         for (String line : fileContent.split("\n")) {
             String[] parts = line.split("=");
@@ -51,7 +52,7 @@ public class LuckyConfig {
 
                 } catch (NumberFormatException e) {
                     logger.log(Level.WARNING, String.format("Config value \"%s\" for key \"%s\" is not an integer. Ignoring",
-                            valueString, uppercaseKey));
+                            valueString, key.toString()));
                     continue;
                 }
             } else if (typeClass == Boolean.class) {
@@ -65,6 +66,8 @@ public class LuckyConfig {
                 continue;
             }
 
+            if (values.containsKey(key))
+                logger.log(Level.WARNING, String.format("Value for key %s is already present, replacing.", key.toString()));
             values.put(key, valueHolder);
         }
 
@@ -79,6 +82,26 @@ public class LuckyConfig {
         return key.getDefaultValue();
     }
 
+    public void set(Key key, Object value) {
+        if (!key.getTypeClass().isInstance(value))
+            throw new IllegalArgumentException("Value has wrong type!");
+
+        values.put(key, new ValueHolder<>(value));
+    }
+
+    public void save() {
+        StringBuilder configString = new StringBuilder();
+
+        for (Map.Entry<Key, ValueHolder> entry : values.entrySet()) {
+            configString.append(entry.getKey().toString());
+            configString.append("=");
+            configString.append(entry.getValue().getValue());
+            configString.append("\n");
+        }
+
+        // Magic methods coming from mr. dahlitz
+    }
+
 
     /**
      *
@@ -88,8 +111,10 @@ public class LuckyConfig {
         WINDOW_HEIGHT(Integer.class, new ValueHolder<>(600)),
         ;
 
-        @Getter private Class typeClass;
-        @Getter private ValueHolder defaultValue;
+        @Getter
+        private Class typeClass;
+        @Getter
+        private ValueHolder defaultValue;
 
         Key(Class typeClass, ValueHolder defaultValue) {
             this.typeClass = typeClass;
@@ -101,7 +126,8 @@ public class LuckyConfig {
      *
      */
     public static class ValueHolder<T> {
-        @Getter private T value;
+        @Getter
+        private T value;
 
         private ValueHolder(T value) {
             this.value = value;
