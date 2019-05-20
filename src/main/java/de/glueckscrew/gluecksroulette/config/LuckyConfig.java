@@ -1,5 +1,6 @@
 package de.glueckscrew.gluecksroulette.config;
 
+import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKey;
 import javafx.scene.input.KeyCode;
 import lombok.Getter;
 

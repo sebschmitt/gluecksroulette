@@ -1,4 +1,4 @@
-package de.glueckscrew.gluecksroulette.config;
+package de.glueckscrew.gluecksroulette.hotkey;
 
 import javafx.scene.input.KeyCode;
 
@@ -63,6 +63,10 @@ public class LuckyHotKey {
         }
 
         return sb.toString();
+    }
+
+    public List<KeyCode> getKeyCodes() {
+        return new ArrayList<>(keyCodes);
     }
 
 
