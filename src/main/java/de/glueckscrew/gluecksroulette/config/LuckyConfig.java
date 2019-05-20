@@ -1,5 +1,6 @@
 package de.glueckscrew.gluecksroulette.config;
 
+import javafx.scene.input.KeyCode;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -57,6 +58,8 @@ public class LuckyConfig {
                 }
             } else if (typeClass == Boolean.class) {
                 value = Boolean.parseBoolean(valueString);
+            } else if (typeClass == LuckyHotKey.class) {
+                value = LuckyHotKey.deserialize(valueString);
             }
 
 
@@ -94,6 +97,13 @@ public class LuckyConfig {
         return (boolean) key.getDefaultValue();
     }
 
+    public LuckyHotKey getHotKey(Key key) {
+        if (values.containsKey(key))
+            return (LuckyHotKey) values.get(key);
+
+        return (LuckyHotKey) key.getDefaultValue();
+    }
+
     public void set(Key key, Object value) {
         if (!key.getTypeClass().isInstance(value))
             throw new IllegalArgumentException("Value has wrong type!");
@@ -120,6 +130,12 @@ public class LuckyConfig {
     public enum Key {
         WINDOW_WIDTH(Integer.class, 800),
         WINDOW_HEIGHT(Integer.class, 600),
+
+        HOTKEY_TOGGLE_HELP(LuckyHotKey.class, new LuckyHotKey(KeyCode.F1)),
+        HOTKEY_SPIN(LuckyHotKey.class, new LuckyHotKey(KeyCode.SPACE)),
+        HOTKEY_HARD_RESET(LuckyHotKey.class, new LuckyHotKey(KeyCode.R, KeyCode.CONTROL)),
+        HOTKEY_SOFT_RESET(LuckyHotKey.class, new LuckyHotKey(KeyCode.R)),
+
         ;
 
         @Getter
