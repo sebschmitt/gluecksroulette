@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class LuckyConfig {
     private static Logger logger = Logger.getLogger(LuckyConfig.class.getSimpleName());
 
-    private HashMap<Key, ValueHolder> values;
+    private HashMap<Key, Object> values;
 
 
     public LuckyConfig() {
@@ -41,14 +41,14 @@ public class LuckyConfig {
 
             String valueString = parts[1];
             Class typeClass = key.getTypeClass();
-            ValueHolder valueHolder = null;
+            Object value = null;
 
             if (typeClass == String.class) {
-                valueHolder = new ValueHolder<>(valueString);
+                value = valueString;
+
             } else if (typeClass == Integer.class) {
                 try {
-                    int intValue = Integer.parseInt(valueString);
-                    valueHolder = new ValueHolder<>(intValue);
+                    value = Integer.parseInt(valueString);
 
                 } catch (NumberFormatException e) {
                     logger.log(Level.WARNING, String.format("Config value \"%s\" for key \"%s\" is not an integer. Ignoring",
@@ -56,81 +56,80 @@ public class LuckyConfig {
                     continue;
                 }
             } else if (typeClass == Boolean.class) {
-                boolean boolValue = Boolean.parseBoolean(valueString);
-                valueHolder = new ValueHolder<>(boolValue);
+                value = Boolean.parseBoolean(valueString);
             }
 
 
-            if (valueHolder == null) {
+            if (value == null) {
                 logger.log(Level.WARNING, "Value \"%s\" has invalid type. Ignoring", valueString);
                 continue;
             }
 
             if (values.containsKey(key))
                 logger.log(Level.WARNING, String.format("Value for key %s is already present, replacing.", key.toString()));
-            values.put(key, valueHolder);
+
+            values.put(key, value);
         }
 
     }
 
-    public ValueHolder get(Key key) {
+    public int getInt(Key key) {
         if (values.containsKey(key))
-            return values.get(key);
+            return (int) values.get(key);
 
-        logger.log(Level.WARNING, String.format("No Value for key %s, relying on default", key.toString()));
+        return (int) key.getDefaultValue();
+    }
 
-        return key.getDefaultValue();
+    public String getString(Key key) {
+        if (values.containsKey(key))
+            return (String) values.get(key);
+
+        return (String) key.getDefaultValue();
+    }
+
+    public boolean getBool(Key key) {
+        if (values.containsKey(key))
+            return (boolean) values.get(key);
+
+        return (boolean) key.getDefaultValue();
     }
 
     public void set(Key key, Object value) {
         if (!key.getTypeClass().isInstance(value))
             throw new IllegalArgumentException("Value has wrong type!");
 
-        values.put(key, new ValueHolder<>(value));
+        values.put(key, value);
     }
 
     public void save() {
         StringBuilder configString = new StringBuilder();
 
-        for (Map.Entry<Key, ValueHolder> entry : values.entrySet()) {
+        for (Map.Entry<Key, Object> entry : values.entrySet()) {
             configString.append(entry.getKey().toString());
             configString.append("=");
-            configString.append(entry.getValue().getValue());
+            configString.append(entry.getValue());
             configString.append("\n");
         }
 
         // Magic methods coming from mr. dahlitz
     }
 
-
     /**
-     *
+     * Defines a Config Key with additional default Value
      */
     public enum Key {
-        WINDOW_WIDTH(Integer.class, new ValueHolder<>(800)),
-        WINDOW_HEIGHT(Integer.class, new ValueHolder<>(600)),
+        WINDOW_WIDTH(Integer.class, 800),
+        WINDOW_HEIGHT(Integer.class, 600),
         ;
 
         @Getter
         private Class typeClass;
         @Getter
-        private ValueHolder defaultValue;
+        private Object defaultValue;
 
-        Key(Class typeClass, ValueHolder defaultValue) {
+        Key(Class typeClass, Object defaultValue) {
             this.typeClass = typeClass;
             this.defaultValue = defaultValue;
-        }
-    }
-
-    /**
-     *
-     */
-    public static class ValueHolder<T> {
-        @Getter
-        private T value;
-
-        private ValueHolder(T value) {
-            this.value = value;
         }
     }
 }
