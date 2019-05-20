@@ -41,7 +41,7 @@ public class LuckyGUI extends Group {
     /**
      * Text that tells the user how to toggle the key hints
      */
-    private Text toggleHintText;
+    private Text toggleHint;
 
     /**
      * Instance of the config
@@ -54,9 +54,9 @@ public class LuckyGUI extends Group {
 
         toggleableHints = new ArrayList<>();
 
-        toggleHintText = new Text(String.format("Press %s to toggle hints!",
+        toggleHint = new Text(String.format("Press %s to toggle hints!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP).toPrettyString()));
-        toggleHintText.setFill(Color.WHITE);
+        toggleHint.setFill(Color.WHITE);
 
         /*
          * Hint how to spin the roulette
@@ -88,7 +88,7 @@ public class LuckyGUI extends Group {
         /*  Playground needs to be first */
         getChildren().add(playground);
 
-        getChildren().add(toggleHintText);
+        getChildren().add(toggleHint);
         getChildren().add(spinHint);
         getChildren().add(softResetHint);
         getChildren().add(hardResetHint);
@@ -107,8 +107,8 @@ public class LuckyGUI extends Group {
             y += HINT_TEXT_OFFSET;
         }
 
-        toggleHintText.xProperty().set(x);
-        toggleHintText.yProperty().set(y);
+        toggleHint.xProperty().set(x);
+        toggleHint.yProperty().set(y);
     }
 
     public void toggleHints() {

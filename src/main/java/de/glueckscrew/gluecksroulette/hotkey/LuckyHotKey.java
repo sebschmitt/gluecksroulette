@@ -20,7 +20,7 @@ public class LuckyHotKey {
     private static final String SERIALIZE_DELIMITER = " ";
 
     /**
-     *
+     * List of all keyCodes that belong to this hotkey
      */
     private List<KeyCode> keyCodes;
 
