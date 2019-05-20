@@ -3,7 +3,7 @@ package de.glueckscrew.gluecksroulette;
 import de.glueckscrew.gluecksroulette.config.LuckyConfig;
 import de.glueckscrew.gluecksroulette.gui.LuckyGUI;
 import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKeyHandler;
-import de.glueckscrew.gluecksroulette.playground.LuckyPlayGround;
+import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -15,13 +15,13 @@ import javafx.stage.Stage;
  * @author Sebastian Schmitt
  */
 public class LuckyControl extends Application {
-    private LuckyPlayGround playground;
+    private LuckyPlayground playground;
 
     @Override
     public void start(Stage primaryStage) {
         LuckyConfig config = new LuckyConfig();
 
-        playground = new LuckyPlayGround(config);
+        playground = new LuckyPlayground(config);
         LuckyGUI gui = new LuckyGUI(playground, config);
 
         Scene mainScene = new Scene(gui, config.getInt(LuckyConfig.Key.WINDOW_WIDTH),

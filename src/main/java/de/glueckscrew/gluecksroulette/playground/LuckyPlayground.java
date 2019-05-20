@@ -7,10 +7,10 @@ import javafx.scene.paint.Color;
 /**
  * @author Sebastian Schmitt
  */
-public class LuckyPlayGround extends SubScene {
+public class LuckyPlayground extends SubScene {
     private Camera camera;
 
-    public LuckyPlayGround(LuckyConfig config) {
+    public LuckyPlayground(LuckyConfig config) {
         super(new Group(), config.getInt(LuckyConfig.Key.WINDOW_WIDTH),
                 config.getInt(LuckyConfig.Key.WINDOW_HEIGHT), true, SceneAntialiasing.BALANCED);
         setFill(Color.BLACK);
