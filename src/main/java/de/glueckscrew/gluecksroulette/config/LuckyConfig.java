@@ -1,9 +1,13 @@
 package de.glueckscrew.gluecksroulette.config;
 
 import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKey;
+import de.glueckscrew.gluecksroulette.io.LuckyIO;
 import javafx.scene.input.KeyCode;
 import lombok.Getter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -13,21 +17,48 @@ import java.util.logging.Logger;
  * @author Sebastian Schmitt
  */
 public class LuckyConfig {
-    private static Logger logger = Logger.getLogger(LuckyConfig.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger(LuckyConfig.class.getSimpleName());
+
+    private static final String KEY_VALUE_SEPERATOR = "=";
+
+    private static final String KEY_SEPERATOR = "\n";
+
+    /**
+     * File name of LuckyConfig Configuration File
+     */
+    private static final String CONFIG_FILE_NAME = "config.luck";
+
+    private File configFile;
 
     private HashMap<Key, Object> values;
-
 
     public LuckyConfig() {
         values = new HashMap<>();
 
-        String fileContent = "\n"; // Magically coming from Mr dahlitz
+        configFile = new File(CONFIG_FILE_NAME);
 
-        for (String line : fileContent.split("\n")) {
-            String[] parts = line.split("=");
+        if (!configFile.exists() || !configFile.isFile()) return;
+
+        String fileContent;
+
+        try {
+            fileContent = LuckyIO.read(new FileInputStream(configFile));
+        } catch (FileNotFoundException e) {
+            logger.log(Level.SEVERE, String.format("FileNotFound Exception thrown. Relying on default values%n"), e);
+            return;
+        } catch (SecurityException e) {
+            logger.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n", configFile.getAbsolutePath()), e);
+            return;
+        }
+
+        if (fileContent.isEmpty()) return;
+
+
+        for (String line : fileContent.split(KEY_SEPERATOR)) {
+            String[] parts = line.split(KEY_VALUE_SEPERATOR);
 
             if (parts.length != 2) {
-                logger.log(Level.WARNING, String.format("Config line:\n%s\n is invalid. Ignoring", line));
+                logger.warning(String.format("Config line:%n%s%n is invalid. Ignoring", line));
                 continue;
             }
 
@@ -37,7 +68,7 @@ public class LuckyConfig {
             try {
                 key = Key.valueOf(uppercaseKey);
             } catch (IllegalArgumentException e) {
-                logger.log(Level.WARNING, String.format("Config key \"%s\" is invalid. Ignoring", uppercaseKey));
+                logger.warning(String.format("Config key \"%s\" is invalid. Ignoring", uppercaseKey));
                 continue;
             }
 
@@ -53,7 +84,7 @@ public class LuckyConfig {
                     value = Integer.parseInt(valueString);
 
                 } catch (NumberFormatException e) {
-                    logger.log(Level.WARNING, String.format("Config value \"%s\" for key \"%s\" is not an integer. Ignoring",
+                    logger.warning(String.format("Config value \"%s\" for key \"%s\" is not an integer. Ignoring",
                             valueString, key.toString()));
                     continue;
                 }
@@ -65,12 +96,12 @@ public class LuckyConfig {
 
 
             if (value == null) {
-                logger.log(Level.WARNING, "Value \"%s\" has invalid type. Ignoring", valueString);
+                logger.warning(String.format("Value \"%s\" has invalid type. Ignoring", valueString));
                 continue;
             }
 
             if (values.containsKey(key))
-                logger.log(Level.WARNING, String.format("Value for key %s is already present, replacing.", key.toString()));
+                logger.warning(String.format("Value for key %s is already present, replacing.", key.toString()));
 
             values.put(key, value);
         }
@@ -112,17 +143,26 @@ public class LuckyConfig {
         values.put(key, value);
     }
 
-    public void save() {
-        StringBuilder configString = new StringBuilder();
+    public boolean save() {
+        StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<Key, Object> entry : values.entrySet()) {
-            configString.append(entry.getKey().toString());
-            configString.append("=");
-            configString.append(entry.getValue());
-            configString.append("\n");
+            sb.append(entry.getKey().toString());
+            sb.append(KEY_VALUE_SEPERATOR);
+            sb.append(entry.getValue().toString());
+            sb.append(KEY_SEPERATOR);
         }
 
-        // Magic methods coming from mr. dahlitz
+        for (Key key : Key.values()) {
+            if (values.containsKey(key)) continue;
+
+            sb.append(key.toString());
+            sb.append(KEY_VALUE_SEPERATOR);
+            sb.append(key.getDefaultValue().toString());
+            sb.append(KEY_SEPERATOR);
+        }
+
+        return LuckyIO.write(configFile, sb.toString());
     }
 
     /**
