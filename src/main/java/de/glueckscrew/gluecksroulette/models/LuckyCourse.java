@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author Florian Dahlitz
  */
-@Data public class LuckyCourse {
+@Data
+public class LuckyCourse {
+
     private static Logger logger = Logger.getLogger(LuckyCourse.class.getSimpleName());
 
     private static final String SERIALIZE_DELIMITER = "\n";
 
-    @Getter @Setter private String identifier;
-    @Getter @Setter private List<LuckyStudent> students;
+    private String identifier;
+    private List<LuckyStudent> students;
 
     public LuckyCourse(String identifier, List<LuckyStudent> students) {
         this.identifier = identifier;
@@ -26,8 +26,9 @@ import lombok.Setter;
     public String serialize() {
         String serializedCourse = "";
 
-        for(LuckyStudent student : this.getStudents())
+        for (LuckyStudent student : this.getStudents()) {
             serializedCourse += student.serialize() + "\n";
+        }
 
         return serializedCourse;
     }
@@ -35,8 +36,9 @@ import lombok.Setter;
     public static LuckyCourse deserialize(String data, String identifier) {
         List<LuckyStudent> students = new ArrayList<>();
 
-        for(String studentData : data.split(SERIALIZE_DELIMITER))
+        for (String studentData : data.split(SERIALIZE_DELIMITER)) {
             students.add(LuckyStudent.deserialize(studentData));
+        }
 
         return new LuckyCourse(identifier, new ArrayList<>(students));
     }

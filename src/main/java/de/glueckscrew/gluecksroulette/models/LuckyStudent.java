@@ -3,8 +3,6 @@ package de.glueckscrew.gluecksroulette.models;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author Florian Dahlitz
@@ -16,11 +14,7 @@ public class LuckyStudent {
 
     private static final String SERIALIZE_DELIMITER = ",";
 
-    @Getter
-    @Setter
     private String name;
-    @Getter
-    @Setter
     private double probability;
 
     private LuckyStudent() {
