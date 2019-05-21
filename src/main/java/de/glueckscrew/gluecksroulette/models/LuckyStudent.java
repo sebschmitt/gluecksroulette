@@ -2,13 +2,14 @@ package de.glueckscrew.gluecksroulette.models;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * @author Florian Dahlitz
  */
-public class LuckyStudent {
+@Data public class LuckyStudent {
     private static Logger logger = Logger.getLogger(LuckyStudent.class.getSimpleName());
 
     private static final String SERIALIZE_DELIMITER = ",";
@@ -53,10 +54,5 @@ public class LuckyStudent {
         }
 
         return new LuckyStudent(studentData[0], probability);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s(name: %s, probability: %s)", this.getClass().getSimpleName(), this.getName(), this.getProbability());
     }
 }

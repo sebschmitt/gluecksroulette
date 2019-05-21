@@ -3,13 +3,14 @@ package de.glueckscrew.gluecksroulette.models;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * @author Florian Dahlitz
  */
-public class LuckyCourse {
+@Data public class LuckyCourse {
     private static Logger logger = Logger.getLogger(LuckyCourse.class.getSimpleName());
 
     private static final String SERIALIZE_DELIMITER = "\n";
@@ -38,10 +39,5 @@ public class LuckyCourse {
             students.add(LuckyStudent.deserialize(studentData));
 
         return new LuckyCourse(identifier, new ArrayList<>(students));
-    }
-
-    @Override
-    public String toString(){
-        return String.format("identifier: %s\nstudents: %s", this.identifier, this.students.toString());
     }
 }
