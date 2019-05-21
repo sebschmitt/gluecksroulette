@@ -19,6 +19,10 @@ import java.util.logging.Logger;
 public class LuckyConfig {
     private static final Logger logger = Logger.getLogger(LuckyConfig.class.getSimpleName());
 
+    private static final String KEY_VALUE_SEPERATOR = "=";
+
+    private static final String KEY_SEPERATOR = "\n";
+
     /**
      * File name of LuckyConfig Configuration File
      */
@@ -50,11 +54,11 @@ public class LuckyConfig {
         if (fileContent.isEmpty()) return;
 
 
-        for (String line : fileContent.split("\n")) {
-            String[] parts = line.split("=");
+        for (String line : fileContent.split(KEY_SEPERATOR)) {
+            String[] parts = line.split(KEY_VALUE_SEPERATOR);
 
             if (parts.length != 2) {
-                logger.warning(String.format("Config line:\n%s\n is invalid. Ignoring", line));
+                logger.warning(String.format("Config line:%n%s%n is invalid. Ignoring", line));
                 continue;
             }
 
@@ -139,26 +143,26 @@ public class LuckyConfig {
         values.put(key, value);
     }
 
-    public void save() {
+    public boolean save() {
         StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<Key, Object> entry : values.entrySet()) {
             sb.append(entry.getKey().toString());
-            sb.append("=");
+            sb.append(KEY_VALUE_SEPERATOR);
             sb.append(entry.getValue().toString());
-            sb.append("\n");
+            sb.append(KEY_SEPERATOR);
         }
 
         for (Key key : Key.values()) {
             if (values.containsKey(key)) continue;
 
             sb.append(key.toString());
-            sb.append("=");
+            sb.append(KEY_VALUE_SEPERATOR);
             sb.append(key.getDefaultValue().toString());
-            sb.append("\n");
+            sb.append(KEY_SEPERATOR);
         }
 
-        LuckyIO.write(configFile, sb.toString());
+        return LuckyIO.write(configFile, sb.toString());
     }
 
     /**
