@@ -25,34 +25,21 @@ public class LuckyIO {
     }
 
     public static boolean write(File file, String data) {
-        boolean successful = true;
-
         try (FileOutputStream fos = new FileOutputStream(file)) {
-            if (!file.exists()) {
-                successful = file.createNewFile();
-            }
-
-            if (!successful) {
-                return false;
-            }
-
             byte[] bytesArray = data.getBytes();
 
             fos.write(bytesArray);
             fos.flush();
 
             return true;
-        } catch (IOException ioe) {
-            logger.log(Level.SEVERE, String
-                    .format("Couldn't write to file: %s. Full Trace Back%n", file.getAbsolutePath()),
-                ioe);
+        } catch (SecurityException | IOException e) {
+            logger.log(Level.SEVERE, String.format("We are unable to create/write file %s. See full stacktrace:%n", file.getAbsolutePath()), e);
             return false;
         }
     }
 
     public static String read(FileInputStream fis) {
-        try (BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, ENCODING))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(fis, ENCODING))) {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
@@ -62,7 +49,7 @@ public class LuckyIO {
             return sb.toString();
         } catch (IOException ioe) {
             logger.log(Level.SEVERE,
-                String.format("Couldn't read from FileInputStream. Full Trace Back:%n"), ioe);
+                    String.format("Couldn't read from FileInputStream. See full stacktrace:%n"), ioe);
             return "";
         }
     }
