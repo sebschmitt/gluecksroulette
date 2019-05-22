@@ -1,7 +1,6 @@
 package de.glueckscrew.gluecksroulette.physics;
 
 import javafx.scene.Group;
-import javafx.scene.*;
 import javafx.scene.shape.Sphere;
 import lombok.Setter;
 import java.util.logging.Level;
