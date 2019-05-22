@@ -1,5 +1,6 @@
 package de.glueckscrew.gluecksroulette.models;
 
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Data;
@@ -31,7 +32,7 @@ public class LuckyStudent {
     }
 
     public String serialize() {
-        return String.format("%s%s%f", this.getName(), SERIALIZE_DELIMITER, this.getProbability());
+        return String.format(Locale.US, "%s%s%f", this.getName(), SERIALIZE_DELIMITER, this.getProbability());
     }
 
     public static LuckyStudent deserialize(String data) {
