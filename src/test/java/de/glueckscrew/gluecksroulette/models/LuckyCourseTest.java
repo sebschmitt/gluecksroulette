@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 
+/**
+ * Test class to test the LuckyCourse model.
+ *
+ * @author Florian Dahlitz
+ */
 public class LuckyCourseTest {
 
     @Test
