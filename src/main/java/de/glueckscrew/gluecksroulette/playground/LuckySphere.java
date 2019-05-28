@@ -17,15 +17,13 @@ public class LuckySphere extends Sphere {
     private Vec3d velocity;
 
     public LuckySphere (){
-        super();
-        this.velocity = new Vec3d();
+       this.velocity = new Vec3d();
     }
     public LuckySphere(Vec3d velocity, double radius){
         super(radius);
         this.velocity = velocity;
     }
     public LuckySphere (Vec3d velocity){
-        super();
         this.velocity = new Vec3d();
     }
 }
