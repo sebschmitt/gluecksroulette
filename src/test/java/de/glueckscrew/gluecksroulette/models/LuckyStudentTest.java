@@ -4,6 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Test class to test the LuckyStudent model.
+ *
+ * @author Florian Dahlitz
+ */
 public class LuckyStudentTest {
     private static final double DELTA = 0.0002;
 
