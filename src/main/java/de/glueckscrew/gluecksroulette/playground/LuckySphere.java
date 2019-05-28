@@ -14,7 +14,7 @@ import lombok.Setter;
 
 public class LuckySphere extends Sphere {
     @Getter @Setter
-    Vec3d velocity;
+    private Vec3d velocity;
 
     public LuckySphere (){
         super();
