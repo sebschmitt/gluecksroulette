@@ -40,7 +40,8 @@ public class LuckyHotKeyHandler {
 
     private void handle() {
         for (Map.Entry<LuckyHotKey, Callback> hotKey : hotKeys.entrySet())
-            if (hotKey.getKey().getKeyCodes().stream().allMatch(this::isPressed))
+            if (hotKey.getKey().getKeyCodes().stream().allMatch(this::isPressed) &&
+                    hotKey.getKey().getKeyCodes().size() == keyStates.keySet().stream().filter(this::isPressed).count())
                 hotKey.getValue().handleHotKey();
     }
 
