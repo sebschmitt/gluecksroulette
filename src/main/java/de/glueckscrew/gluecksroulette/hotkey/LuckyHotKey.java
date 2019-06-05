@@ -5,6 +5,7 @@ import javafx.scene.input.KeyCode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -95,4 +96,17 @@ public class LuckyHotKey {
         return new LuckyHotKey(keyCodes);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LuckyHotKey that = (LuckyHotKey) o;
+        return keyCodes.equals(that.keyCodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(keyCodes);
+    }
 }

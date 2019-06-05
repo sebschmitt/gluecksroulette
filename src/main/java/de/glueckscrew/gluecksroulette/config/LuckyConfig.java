@@ -115,6 +115,10 @@ public class LuckyConfig {
         return (int) key.getDefaultValue();
     }
 
+    public int getDefaultInt(Key key) {
+        return (int) key.getDefaultValue();
+    }
+
     public String getString(Key key) {
         if (values.containsKey(key))
             return (String) values.get(key);
@@ -122,10 +126,18 @@ public class LuckyConfig {
         return (String) key.getDefaultValue();
     }
 
+    public String getDefaultString(Key key) {
+        return (String) key.getDefaultValue();
+    }
+
     public boolean getBool(Key key) {
         if (values.containsKey(key))
             return (boolean) values.get(key);
 
+        return (boolean) key.getDefaultValue();
+    }
+
+    public boolean getDefaultBool(Key key) {
         return (boolean) key.getDefaultValue();
     }
 
@@ -144,6 +156,7 @@ public class LuckyConfig {
     }
 
     public boolean save() {
+        logger.info("saving config");
         StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<Key, Object> entry : values.entrySet()) {
