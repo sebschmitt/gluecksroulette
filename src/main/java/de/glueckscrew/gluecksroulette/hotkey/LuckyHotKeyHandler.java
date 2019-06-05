@@ -30,6 +30,10 @@ public class LuckyHotKeyHandler {
         keyReleased = (EventHandler<KeyEvent>) event -> keyStates.put(event.getCode(), false);
     }
 
+    public void release(LuckyHotKey hotKey) {
+        hotKey.getKeyCodes().forEach(keyCode  -> keyStates.put(keyCode, false));
+    }
+
     public void register(LuckyHotKey hotKey, Callback callback) {
         hotKeys.put(hotKey, callback);
     }

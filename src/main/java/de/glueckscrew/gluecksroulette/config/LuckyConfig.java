@@ -189,6 +189,8 @@ public class LuckyConfig {
         HOTKEY_SPIN(LuckyHotKey.class, new LuckyHotKey(KeyCode.SPACE)),
         HOTKEY_HARD_RESET(LuckyHotKey.class, new LuckyHotKey(KeyCode.R, KeyCode.CONTROL)),
         HOTKEY_SOFT_RESET(LuckyHotKey.class, new LuckyHotKey(KeyCode.R)),
+        HOTKEY_OPEN_COURSE_FILE(LuckyHotKey.class, new LuckyHotKey(KeyCode.O, KeyCode.CONTROL)),
+        HOTKEY_SAVE_COURSE_FILE(LuckyHotKey.class, new LuckyHotKey(KeyCode.S, KeyCode.CONTROL)),
 
         ;
 

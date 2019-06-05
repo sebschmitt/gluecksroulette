@@ -25,8 +25,6 @@ public class LuckyStudentSegment extends Group {
 
     private static final Color TEXT_COLOR = Color.valueOf("#ecf0f1");
 
-    private static PhongMaterial meshViewMaterial;
-
     @Getter private LuckyStudent luckyStudent;
 
     @Setter private double offset;
@@ -35,10 +33,6 @@ public class LuckyStudentSegment extends Group {
     private Text text;
     @Getter private MeshView meshView;
 
-    /**
-     *
-     * @param luckyStudent
-     */
     public LuckyStudentSegment(LuckyStudent luckyStudent, Color color) {
         this.luckyStudent = luckyStudent;
         this.color = color;

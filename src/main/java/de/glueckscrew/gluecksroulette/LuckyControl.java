@@ -50,7 +50,6 @@ public class LuckyControl extends Application {
         playground.heightProperty().bind(mainScene.heightProperty());
         playground.widthProperty().bind(mainScene.widthProperty());
 
-
         LuckyHotKeyHandler hotKeyHandler = new LuckyHotKeyHandler();
 
         mainScene.setOnKeyPressed(hotKeyHandler.keyPressed());
@@ -58,18 +57,15 @@ public class LuckyControl extends Application {
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP), gui::toggleHints);
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> playground.spin());
-
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> playground.hardReset());
-
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> playground.softReset());
 
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.O), () -> {
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE), () ->  {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Course File");
             File file = fileChooser.showOpenDialog(primaryStage);
 
-            if (file == null) return;
-
+            if (file != null) {
                 try {
                     LuckyCourse course = LuckyCourse.deserialize(LuckyIO.read(new FileInputStream(file)), file.getName());
 
@@ -81,17 +77,31 @@ public class LuckyControl extends Application {
                     logger.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n",
                             file.getAbsolutePath()), e);
                 }
+            }
+
+
+            /*
+            key released event is NOT called due to input blocking of showOpenDialog,
+            need to manual reset
+             */
+            hotKeyHandler.release(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE));
+
         });
-
-
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.S, KeyCode.CONTROL), () -> {
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE), () -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Course File");
             File file = fileChooser.showSaveDialog(primaryStage);
 
-            if (file == null) return;
+            if (file != null) {
+                LuckyIO.write(file, playground.getCurrentCourse().serialize());
+            }
 
-            LuckyIO.write(file, playground.getCurrentCourse().serialize());
+
+            /*
+            key released event is NOT called due to input blocking of showSaveDialog,
+            need to manual reset
+             */
+            hotKeyHandler.release(config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE));
         });
 
 

@@ -61,37 +61,37 @@ public class LuckyGUI extends Group {
         /*
          * Hint how to spin the roulette
          */
-        Text spinHint = new Text(String.format("Press %s to spin the roulette!",
-                config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN).toPrettyString()));
-        spinHint.setFill(Color.WHITE);
-        spinHint.setVisible(false);
-        toggleableHints.add(spinHint);
+        toggleableHints.add(createToggleableHint(String.format("Press %s to spin the roulette!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN).toPrettyString())));
 
         /*
          * Hint for soft reset
          */
-        Text softResetHint = new Text(String.format("Press %s for soft reset!",
-                config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET).toPrettyString()));
-        softResetHint.setFill(Color.WHITE);
-        softResetHint.setVisible(false);
-        toggleableHints.add(softResetHint);
+        toggleableHints.add(createToggleableHint(String.format("Press %s for soft reset!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET).toPrettyString())));
 
         /*
          * Hint for hard reset
          */
-        Text hardResetHint = new Text(String.format("Press %s for hard reset!",
-                config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET).toPrettyString()));
-        hardResetHint.setFill(Color.WHITE);
-        hardResetHint.setVisible(false);
-        toggleableHints.add(hardResetHint);
+        toggleableHints.add(createToggleableHint(String.format("Press %s for hard reset!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET).toPrettyString())));
+        /*
+         * Hint for open course file
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s to open course!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE).toPrettyString())));
+
+        /*
+         * Hint for saving course file
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s to save course!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE).toPrettyString())));
 
         /*  Playground needs to be first */
         getChildren().add(playground);
 
-        getChildren().add(toggleHint);
-        getChildren().add(spinHint);
-        getChildren().add(softResetHint);
-        getChildren().add(hardResetHint);
+        getChildren().addAll(toggleHint);
+        getChildren().addAll(toggleableHints);
 
         update();
     }
@@ -116,5 +116,13 @@ public class LuckyGUI extends Group {
 
         for (Text text : toggleableHints)
             text.setVisible(showHints);
+    }
+
+    private Text createToggleableHint(String text) {
+        Text hint = new Text(text);
+        hint.setFill(Color.WHITE);
+        hint.setVisible(false);
+
+        return hint;
     }
 }
