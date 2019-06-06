@@ -1,5 +1,9 @@
 package de.glueckscrew.gluecksroulette;
 
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 import de.glueckscrew.gluecksroulette.config.LuckyConfig;
 import de.glueckscrew.gluecksroulette.gui.LuckyGUI;
 import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKey;
@@ -56,7 +60,29 @@ public class LuckyControl extends Application {
         mainScene.setOnKeyReleased(hotKeyHandler.keyReleased());
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP), gui::toggleHints);
-        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> playground.spin());
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> {
+            playground.spin();
+
+            User32.INSTANCE.EnumWindows(new User32.WNDENUMPROC() {
+
+                int count;
+
+                public boolean callback(WinDef.HWND hWnd, Pointer userData) {
+                    char[] windowText = new char[512];
+                    User32.INSTANCE.GetWindowText(hWnd, windowText, 512);
+                    String wText = Native.toString(windowText);
+                    wText = (wText.isEmpty()) ? "" : "; text: " + wText;
+                    System.out.println("Found window " + hWnd + ", total " + ++count + wText);
+
+                    if (wText.contains("WINDOW NAME")) {
+                        boolean x = User32.INSTANCE.SetForegroundWindow(hWnd);
+                        System.out.println("worked: " +x);
+                        return false;
+                    }
+                    return true;
+                }
+            },null);
+        });
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> playground.hardReset());
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> playground.softReset());
 
@@ -87,6 +113,8 @@ public class LuckyControl extends Application {
             hotKeyHandler.release(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE));
 
         });
+
+        // TODO: move to auto save, need to remember current course file
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE), () -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Course File");

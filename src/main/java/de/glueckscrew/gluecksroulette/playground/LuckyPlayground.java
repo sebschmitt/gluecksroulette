@@ -56,7 +56,7 @@ public class LuckyPlayground extends SubScene {
         setCamera(camera);
 
         camera.setTranslateX(CAMERA_DEFAULT_X +
-                (config.getDefaultInt(LuckyConfig.Key.WINDOW_WIDTH) - config.getInt(LuckyConfig.Key.WINDOW_WIDTH)) / 2);
+                (config.getDefaultInt(LuckyConfig.Key.WINDOW_WIDTH) -   config.getInt(LuckyConfig.Key.WINDOW_WIDTH)) / 2);
         camera.setTranslateY(CAMERA_DEFAULT_Y +
                 (config.getDefaultInt(LuckyConfig.Key.WINDOW_HEIGHT) - config.getInt(LuckyConfig.Key.WINDOW_HEIGHT)) / 2);
         camera.setTranslateZ(CAMERA_DEFAULT_Z -

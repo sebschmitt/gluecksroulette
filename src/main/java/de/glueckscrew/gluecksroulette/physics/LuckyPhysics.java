@@ -67,13 +67,6 @@ public class LuckyPhysics {
             for (int i = 0; i < steps; i++) {
                 //TODO if frame != null
                 if (luckyBall != null && wheel != null && !wheel.getChildren().isEmpty()) {
-
-                    //TODO Checklist für seb (probably not complete)
-                    // LuckySphere -> LuckyBall
-                    // wheelgruppe -> LuckyWheel
-                    // add wheelgroup to rootgroup, not all segments themself
-                    // rename sphere variable to ball :)
-
                     luckyBall.setTranslateY(luckyBall.getTranslateY() + luckyBall.getVelocity().y);
                     luckyBall.setTranslateX(luckyBall.getTranslateX() + luckyBall.getVelocity().x);
                     luckyBall.setTranslateZ(luckyBall.getTranslateZ() + luckyBall.getVelocity().z);
@@ -95,6 +88,7 @@ public class LuckyPhysics {
 
                     // simulate gravity and air resistance
                     luckyBall.getVelocity().y += GRAVITY;
+                    luckyBall.getVelocity().y *= AIR_RESISTANCE;
                     luckyBall.getVelocity().z *= AIR_RESISTANCE;
                     luckyBall.getVelocity().x *= AIR_RESISTANCE;
 
