@@ -27,6 +27,8 @@ public class LuckyPlayground extends SubScene {
     private static final int CAMERA_DEFAULT_Y = 150;
     private static final int CAMERA_DEFAULT_Z = 0;
 
+    private static final double WHEEL_DEFAULT_Y = 470.5;
+
     private static final LuckyCourse DUMMY_COURSE = new LuckyCourse("", new ArrayList<LuckyStudent>() {{
         add(new LuckyStudent("lucky roulette"));
         add(new LuckyStudent("lucky roulette"));
@@ -79,6 +81,7 @@ public class LuckyPlayground extends SubScene {
         rootGroup.getChildren().add(ball);
 
         wheel = new LuckyWheel();
+        wheel.setTranslateY(WHEEL_DEFAULT_Y);
         rootGroup.getChildren().add(wheel);
         segments = new ArrayList<>();
 

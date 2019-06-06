@@ -92,8 +92,11 @@ public class LuckyPhysics {
                     luckyBall.getVelocity().z *= AIR_RESISTANCE;
                     luckyBall.getVelocity().x *= AIR_RESISTANCE;
 
-                    if (luckyBall.getBoundsInParent().intersects(wheel.getBoundsInLocal())) {
+
                         Vec3d distanceCentre = new Vec3d(luckyBall.getTranslateX(), 0, luckyBall.getTranslateZ());
+                    // if (LuckyPlayground.WHEEL_RADIUS < distanceCentre.length() + luckyBall.getRadius()
+                    //         && wheel.getTranslateY() >= luckyBall.getTranslateY() + luckyBall.getRadius()){
+                    if (luckyBall.getBoundsInParent().intersects(wheel.getBoundsInParent())) {
                         //Since we need to use the intersect function with getBoundsInLocal in the collision detection,
                         // the wheel is somehow treated as a square, preventing errors we only handle the collision if
                         // it really appeared

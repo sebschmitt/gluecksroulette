@@ -38,7 +38,7 @@ public class LuckyStudentSegment extends Group {
         this.color = color;
 
         text = new Text();
-        text.setTranslateY(469);
+        text.setTranslateY(-1.5);
         text.setFont(new Font(37));
         text.setFill(TEXT_COLOR);
         text.setSmooth(true);
@@ -46,7 +46,7 @@ public class LuckyStudentSegment extends Group {
 
         meshView = new MeshView();
         meshView.setDrawMode(DrawMode.FILL);
-        meshView.setTranslateY(470.5);
+        meshView.setTranslateY(0);
         meshView.setTranslateX(0);
         meshView.setTranslateZ(0);
         getChildren().add(meshView);
