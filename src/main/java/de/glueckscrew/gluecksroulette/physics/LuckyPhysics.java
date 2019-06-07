@@ -66,6 +66,10 @@ public class LuckyPhysics {
         if (steps > 0) {
             for (int i = 0; i < steps; i++) {
                 //TODO if frame != null
+                boolean collidesBaseWheel = false;
+                boolean collidesColonWheel = false;
+                boolean collidesFrame = false;
+
                 if (luckyBall != null && wheel != null && !wheel.getChildren().isEmpty()) {
                     luckyBall.setTranslateY(luckyBall.getTranslateY() + luckyBall.getVelocity().y);
                     luckyBall.setTranslateX(luckyBall.getTranslateX() + luckyBall.getVelocity().x);
@@ -93,10 +97,11 @@ public class LuckyPhysics {
                     luckyBall.getVelocity().x *= AIR_RESISTANCE;
 
 
+
                         Vec3d distanceCentre = new Vec3d(luckyBall.getTranslateX(), 0, luckyBall.getTranslateZ());
-                    // if (LuckyPlayground.WHEEL_RADIUS < distanceCentre.length() + luckyBall.getRadius()
-                    //         && wheel.getTranslateY() >= luckyBall.getTranslateY() + luckyBall.getRadius()){
-                    if (luckyBall.getBoundsInParent().intersects(wheel.getBoundsInParent())) {
+                    if (LuckyPlayground.WHEEL_RADIUS > distanceCentre.length() + luckyBall.getRadius()
+                            && wheel.getTranslateY() <= luckyBall.getTranslateY() + luckyBall.getRadius()) {
+                        //if (luckyBall.getBoundsInParent().intersects(wheel.getBoundsInParent())) {
                         //Since we need to use the intersect function with getBoundsInLocal in the collision detection,
                         // the wheel is somehow treated as a square, preventing errors we only handle the collision if
                         // it really appeared
@@ -154,7 +159,7 @@ public class LuckyPhysics {
         luckyBall.setTranslateX(LuckyPlayground.WHEEL_RADIUS * 0.5);
         luckyBall.setTranslateZ(LuckyPlayground.WHEEL_RADIUS * 0.5);
         luckyBall.setTranslateY(400);
-        wheel.setRotationSpeed(BASE_WHEEL_SPEED);
+        wheel.setRotationSpeed(wheel.getRotationSpeed() + BASE_WHEEL_SPEED);
         logger.log(Level.INFO, "Spin started!");
         return 0;
     }

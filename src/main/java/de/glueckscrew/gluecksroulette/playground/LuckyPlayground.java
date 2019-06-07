@@ -73,14 +73,14 @@ public class LuckyPlayground extends SubScene {
         light.setTranslateZ(0);
         rootGroup.getChildren().add(light);
 
-        ball = new LuckyBall();
+        ball = LuckyBall.getInstance();
         ball.setTranslateX(WHEEL_RADIUS * 0.9);
         ball.setTranslateY(460);
         ball.setTranslateZ(0);
         ball.setRadius(10);
         rootGroup.getChildren().add(ball);
 
-        wheel = new LuckyWheel();
+        wheel = LuckyWheel.getInstance();
         wheel.setTranslateY(WHEEL_DEFAULT_Y);
         rootGroup.getChildren().add(wheel);
         segments = new ArrayList<>();

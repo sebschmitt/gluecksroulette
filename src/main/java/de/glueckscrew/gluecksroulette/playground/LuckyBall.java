@@ -9,11 +9,13 @@ import lombok.Setter;
 
 /**
  * This class extends the javafx-sphere-class by velocity.
+ * implemented as a singleton
  *
  * @author Paul Weisser
  */
 public class LuckyBall extends Sphere {
     private static PhongMaterial material;
+    private static LuckyBall instance;
 
     static {
         material = new PhongMaterial(Color.WHITE);
@@ -24,7 +26,15 @@ public class LuckyBall extends Sphere {
     @Setter
     Vec3d velocity;
 
-    public LuckyBall() {
+    //access to the class
+    public static LuckyBall getInstance() {
+        if (LuckyBall.instance == null) {
+            LuckyBall.instance = new LuckyBall();
+        }
+        return LuckyBall.instance;
+    }
+
+    private LuckyBall() {
         this.velocity = new Vec3d();
         setMaterial(material);
     }
