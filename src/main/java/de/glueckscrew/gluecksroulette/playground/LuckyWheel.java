@@ -20,10 +20,8 @@ public class LuckyWheel extends Group {
     private double rotationSpeed = 0;
     @Getter
     @Setter
-    private double colonRadius = 1;
-    @Getter
-    @Setter
-    private double colonAngle = 45;
+    private double colonRadius = 100;
+
 
 
     private LuckyWheel() {
