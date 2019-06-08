@@ -4,12 +4,14 @@ import de.glueckscrew.gluecksroulette.config.LuckyConfig;
 import de.glueckscrew.gluecksroulette.models.LuckyCourse;
 import de.glueckscrew.gluecksroulette.models.LuckyStudent;
 import de.glueckscrew.gluecksroulette.physics.LuckyPhysics;
+import de.glueckscrew.gluecksroulette.physics.LuckyPhysicsListener;
 import javafx.animation.AnimationTimer;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Rotate;
 import lombok.Getter;
+import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Sebastian Schmitt
  */
-public class LuckyPlayground extends SubScene {
+public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     public static final int WHEEL_RADIUS = 400;
     public static final double COLON_RADIUS = 0.25d * WHEEL_RADIUS;
 
@@ -40,6 +42,7 @@ public class LuckyPlayground extends SubScene {
     private LuckyBall ball;
 
     private List<LuckyStudentSegment> segments;
+    private LuckyStudentSegment activeSegment;
 
     @Getter private LuckyCourse currentCourse;
     private LuckyCourse initState;
@@ -89,6 +92,7 @@ public class LuckyPlayground extends SubScene {
         physics.setFrame(new Group());
         physics.setWheel(wheel);
         physics.setLuckyBall(ball);
+        physics.setListener(this);
 
 
         LuckyFrame frame = new LuckyFrame(WHEEL_RADIUS);
@@ -104,6 +108,18 @@ public class LuckyPlayground extends SubScene {
         wheel.getChildren().add(cone);
 
         setCurrentCourse(DUMMY_COURSE);
+    }
+
+    @Override
+    public void onBallStopped() {
+        activeSegment = getSegmentWithBall();
+        // set new probability p for selected student to p/n, where n is size of course
+        activeSegment.getLuckyStudent().setProbability(activeSegment.getLuckyStudent().getProbability()/segments.size());
+        resizeSegments();
+    }
+
+    private LuckyStudentSegment getSegmentWithBall() {
+        return segments.get(ThreadLocalRandom.current().nextInt(0, segments.size()));
     }
 
     public void setCurrentCourse(LuckyCourse currentCourse) {

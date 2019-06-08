@@ -6,6 +6,7 @@ import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import de.glueckscrew.gluecksroulette.playground.LuckyWheel;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.logging.Level;
@@ -39,8 +40,12 @@ public class LuckyPhysics {
     @Setter
     private LuckyBall luckyBall;
 
+    private LuckyPhysicsListener listener;
+    boolean spinning;
+
     //private constructor to prevent a second instantiation
     private LuckyPhysics() {
+        this.spinning = false;
     }
 
     //access to the class
@@ -49,6 +54,10 @@ public class LuckyPhysics {
             LuckyPhysics.instance = new LuckyPhysics();
         }
         return LuckyPhysics.instance;
+    }
+
+    public void setListener(LuckyPhysicsListener listener) {
+        this.listener = listener;
     }
 
     // calls tick(int steps) with a value of 1
@@ -88,6 +97,10 @@ public class LuckyPhysics {
                         }
                     } else {
                         wheel.setRotationSpeed(0);
+                        if (this.spinning) {
+                            this.spinning = false;
+                            listener.onBallStopped();
+                        }
                     }
 
                     // simulate gravity and air resistance
@@ -130,6 +143,7 @@ public class LuckyPhysics {
                         }
 
                     }
+                    //TODO: on ball motion stop call if (listener != null) listener.onBallStopped()
                     return 0;
 
                 } else {
@@ -161,6 +175,7 @@ public class LuckyPhysics {
         luckyBall.setTranslateY(400);
         wheel.setRotationSpeed(wheel.getRotationSpeed() + BASE_WHEEL_SPEED);
         logger.log(Level.INFO, "Spin started!");
+        this.spinning = true;
         return 0;
     }
 
