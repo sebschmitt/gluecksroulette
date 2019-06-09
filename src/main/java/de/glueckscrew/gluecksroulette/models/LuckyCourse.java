@@ -1,9 +1,11 @@
 package de.glueckscrew.gluecksroulette.models;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -17,11 +19,16 @@ public class LuckyCourse implements Cloneable {
     private static final String SERIALIZE_DELIMITER = "\n";
 
     private String identifier;
+    @Getter
     private List<LuckyStudent> students;
+
+    private int countStudentWeightLow;
+    private double studentWeightLowest;
 
     public LuckyCourse(String identifier, List<LuckyStudent> students) {
         this.identifier = identifier;
         this.students = students;
+        initWeights();
     }
 
     public String serialize() {
@@ -44,6 +51,49 @@ public class LuckyCourse implements Cloneable {
         return new LuckyCourse(identifier, new ArrayList<>(students));
     }
 
+    public void select(LuckyStudent student) {
+        // set new weight p for selected student to p/n, where n is size of course
+        double oldWeight = student.getProbability();
+        double newWeight = oldWeight / students.size();
+        student.setProbability(newWeight);
+        if (oldWeight >= 1 && newWeight < 1) {
+            ++countStudentWeightLow;
+        }
+        if (studentWeightLowest > newWeight) {
+            studentWeightLowest = newWeight;
+        }
+
+        logger.log(Level.INFO, "count low: " + countStudentWeightLow);
+        if (countStudentWeightLow == students.size()) {
+            normalizeWeights();
+        }
+    }
+
+    private void normalizeWeights() {
+        double factor = 1/studentWeightLowest;
+        for (LuckyStudent student : students) {
+            student.setProbability(student.getProbability()*factor);
+        }
+        countStudentWeightLow = 0;
+    }
+
+    private void initWeights() {
+        countStudentWeightLow = 0;
+        studentWeightLowest = 1;
+
+        for (LuckyStudent student : students) {
+            double weight = student.getProbability();
+            if (weight < 1) {
+                ++countStudentWeightLow;
+                if (studentWeightLowest > weight) {
+                    studentWeightLowest = weight;
+                }
+            }
+        }
+        if (countStudentWeightLow == students.size()) {
+            normalizeWeights();
+        }
+    }
 
     @Override
     public LuckyCourse clone() {

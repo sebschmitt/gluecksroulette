@@ -11,16 +11,21 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Rotate;
 import lombok.Getter;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Sebastian Schmitt
  */
 public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
+    private static Logger logger = Logger.getLogger(LuckyPlayground.class.getSimpleName());
+
     public static final int WHEEL_RADIUS = 400;
     public static final double COLON_RADIUS = 0.25d * WHEEL_RADIUS;
 
@@ -32,9 +37,9 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     private static final double WHEEL_DEFAULT_Y = 470.5;
 
     private static final LuckyCourse DUMMY_COURSE = new LuckyCourse("", new ArrayList<LuckyStudent>() {{
-        add(new LuckyStudent("lucky roulette"));
-        add(new LuckyStudent("lucky roulette"));
-        add(new LuckyStudent("lucky roulette"));
+        add(new LuckyStudent("lucky student 1"));
+        add(new LuckyStudent("lucky student 2"));
+        add(new LuckyStudent("lucky student 3"));
     }});
 
     private LuckyPhysics physics;
@@ -44,7 +49,8 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     private List<LuckyStudentSegment> segments;
     private LuckyStudentSegment activeSegment;
 
-    @Getter private LuckyCourse currentCourse;
+    @Getter
+    private LuckyCourse currentCourse;
     private LuckyCourse initState;
 
     private LuckyStudentSegment lastChangedSegment;
@@ -61,7 +67,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         setCamera(camera);
 
         camera.setTranslateX(CAMERA_DEFAULT_X +
-                (config.getDefaultInt(LuckyConfig.Key.WINDOW_WIDTH) -   config.getInt(LuckyConfig.Key.WINDOW_WIDTH)) / 2);
+                (config.getDefaultInt(LuckyConfig.Key.WINDOW_WIDTH) - config.getInt(LuckyConfig.Key.WINDOW_WIDTH)) / 2);
         camera.setTranslateY(CAMERA_DEFAULT_Y +
                 (config.getDefaultInt(LuckyConfig.Key.WINDOW_HEIGHT) - config.getInt(LuckyConfig.Key.WINDOW_HEIGHT)) / 2);
         camera.setTranslateZ(CAMERA_DEFAULT_Z -
@@ -113,8 +119,16 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     @Override
     public void onBallStopped() {
         activeSegment = getSegmentWithBall();
-        // set new probability p for selected student to p/n, where n is size of course
-        activeSegment.getLuckyStudent().setProbability(activeSegment.getLuckyStudent().getProbability()/segments.size());
+        for (LuckyStudent student : currentCourse.getStudents()) {
+            logger.log(Level.INFO, student.getName() + " (old weight): " + student.getWeight());
+        }
+
+        currentCourse.select(activeSegment.getLuckyStudent());
+
+        logger.log(Level.INFO, "Selected: " + activeSegment.getLuckyStudent().getName());
+        for (LuckyStudent student : currentCourse.getStudents()) {
+            logger.log(Level.INFO, student.getName() + " (new weight): " + student.getWeight());
+        }
         resizeSegments();
     }
 
