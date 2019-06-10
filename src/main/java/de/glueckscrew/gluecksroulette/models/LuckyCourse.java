@@ -95,6 +95,13 @@ public class LuckyCourse implements Cloneable {
         }
     }
 
+    public void resetWeights() {
+        countStudentWeightLow = 0;
+        studentWeightLowest = 1;
+
+        students.forEach(student -> student.setProbability(1));
+    }
+
     @Override
     public LuckyCourse clone() {
         List<LuckyStudent> clonedStudents = new ArrayList<>();

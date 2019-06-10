@@ -48,7 +48,6 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
 
     @Getter
     private LuckyCourse currentCourse;
-    private LuckyCourse initState;
 
     private LuckyStudentSegment lastChangedSegment;
     private double lastProbabilityChange;
@@ -115,11 +114,14 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
 
     @Override
     public void onBallStopped() {
-        LuckyStudentSegment activeSegment = getSegmentWithBall();
-        if (activeSegment == null) {
+        lastChangedSegment = getSegmentWithBall();
+        if (lastChangedSegment == null) {
             return;
         }
-        currentCourse.select(activeSegment.getLuckyStudent());
+
+        LuckyStudent student = lastChangedSegment.getLuckyStudent();
+        lastProbabilityChange = student.getWeight();
+        currentCourse.select(student);
         resizeSegments();
     }
 
@@ -158,7 +160,6 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
 
     public void setCurrentCourse(LuckyCourse currentCourse) {
         this.currentCourse = currentCourse;
-        this.initState = currentCourse.clone();
 
         wheel.getChildren().removeAll(segments);
         segments.clear();
@@ -209,16 +210,24 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     }
 
     public void softReset() {
+        if (physics.isSpinning()) {
+            physics.reset();
+            return;
+        }
         if (lastChangedSegment == null) return;
 
-        lastChangedSegment.getLuckyStudent().setWeight(
-                lastChangedSegment.getLuckyStudent().getWeight() + lastProbabilityChange);
-
+        lastChangedSegment.getLuckyStudent().setWeight(lastProbabilityChange);
+        resizeSegments();
     }
 
     public void hardReset() {
-        if (initState != null)
-            setCurrentCourse(initState);
+        if (physics.isSpinning()) {
+            physics.reset();
+            return;
+        }
+        lastChangedSegment = null;
+        currentCourse.resetWeights();
+        resizeSegments();
     }
 
     public void spin() {

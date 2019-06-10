@@ -41,6 +41,7 @@ public class LuckyPhysics {
     private LuckyBall luckyBall;
 
     private LuckyPhysicsListener listener;
+    @Getter
     private boolean spinning;
 
     //private constructor to prevent a second instantiation
