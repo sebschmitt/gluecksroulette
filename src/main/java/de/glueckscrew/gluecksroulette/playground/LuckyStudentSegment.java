@@ -36,8 +36,11 @@ public class LuckyStudentSegment extends Group {
     @Getter
     private LuckyStudent luckyStudent;
 
+
+    @Getter
     @Setter
     private double offset;
+    @Getter
     @Setter
     private double step;
     @Setter

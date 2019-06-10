@@ -97,9 +97,10 @@ public class LuckyPhysics {
                         }
                     } else {
                         wheel.setRotationSpeed(0);
+                        //TODO: run on ball stop, not wheel stop
                         if (this.spinning) {
                             this.spinning = false;
-                            listener.onBallStopped();
+                            if (listener != null) listener.onBallStopped();
                         }
                     }
 
