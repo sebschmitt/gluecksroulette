@@ -8,9 +8,6 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import lombok.Getter;
 
@@ -85,27 +82,23 @@ public class LuckyPlayground extends SubScene {
         rootGroup.getChildren().add(wheel);
         segments = new ArrayList<>();
 
-        MeshView meshView = new MeshView(createToroidMesh(WHEEL_RADIUS, WHEEL_RADIUS * 0.05f));
-        meshView.setDrawMode(DrawMode.FILL);
-        meshView.setMaterial(new PhongMaterial(Color.WHITE));
-        meshView.setTranslateY(470.5);
-        meshView.setTranslateX(0);
-        meshView.setTranslateZ(0);
-        meshView.getTransforms().add(new Rotate(-90, Rotate.X_AXIS));
-
-        PhongMaterial mat = new PhongMaterial(Color.valueOf("#cd8500"));
-        mat.setSpecularColor(Color.WHITE);
-        meshView.setMaterial(mat);
-
-        rootGroup.getChildren().add(meshView);
-
         physics = LuckyPhysics.getInstance();
         physics.setFrame(new Group());
         physics.setWheel(wheel);
         physics.setLuckyBall(ball);
 
-        ball.getTransforms().add(new Rotate(0, -WHEEL_RADIUS * 0.9, 0, 0, Rotate.Y_AXIS));
-        segments.forEach(segment -> segment.getTransforms().add(new Rotate(0, 0, 0, 0, Rotate.Y_AXIS)));
+
+        LuckyCone cone = new LuckyCone();
+        PhongMaterial mat = new PhongMaterial(Color.RED);
+        mat.setSpecularColor(Color.WHITE);
+        cone.setMaterial(mat);
+
+        wheel.getChildren().add(cone);
+
+        LuckyCenterCone center = new LuckyCenterCone();
+        center.setMaterial(mat);
+
+        wheel.getChildren().add(center);
 
         setCurrentCourse(DUMMY_COURSE);
     }
@@ -177,114 +170,5 @@ public class LuckyPlayground extends SubScene {
 
     public void spin() {
         physics.spin();
-    }
-
-
-    /*
-    Taken from https://stackoverflow.com/a/24565474
-
-    Let the radius from the center of the hole to the center of the torus tube be "c",
-    and the radius of the tube be "a".
-    Then the equation in Cartesian coordinates for a torus azimuthally symmetric about the z-axis is
-    (c-sqrt(x^2+y^2))^2+z^2=a^2
-    and the parametric equations are
-    x = (c + a * cos(v)) * cos(u)
-    y = (c + a * cos(v)) * sin(u)
-    z =  a * sin(v)
-    (for u,v in [0,2pi).
-
-    Three types of torus, known as the standard tori, are possible,
-    depending on the relative sizes of a and c. c>a corresponds to the ring torus (shown above),
-    c=a corresponds to a horn torus which is tangent to itself at the point (0, 0, 0),
-    and c<a corresponds to a self-intersecting spindle torus (Pinkall 1986).
-    */
-    private static TriangleMesh createToroidMesh(float radius, float tRadius) {
-        int tubeDivisions = 100, radiusDivisions = 100;
-
-        int POINT_SIZE = 3, TEXCOORD_SIZE = 2, FACE_SIZE = 6;
-        int numVerts = tubeDivisions * radiusDivisions;
-        int faceCount = numVerts * 2;
-        float[] points = new float[numVerts * POINT_SIZE],
-                texCoords = new float[numVerts * TEXCOORD_SIZE];
-        int[] faces = new int[faceCount * FACE_SIZE];
-
-        int pointIndex = 0, texIndex = 0, faceIndex = 0;
-        double tubeFraction = 1.0f / tubeDivisions;
-        double radiusFraction = 1.0f / radiusDivisions;
-
-        int p0, p1, p2, p3, t0, t1, t2, t3;
-
-        // create points
-        for (int tubeIndex = 0; tubeIndex < tubeDivisions; tubeIndex++) {
-
-            double radian = tubeFraction * tubeIndex * 2.0f * Math.PI;
-
-            for (int radiusIndex = 0; radiusIndex < radiusDivisions; radiusIndex++) {
-
-                double localRadian = radiusFraction * radiusIndex * 2.0f * Math.PI;
-
-                points[pointIndex] = (radius + tRadius * ((float) Math.cos(radian))) * ((float) Math.cos(localRadian));
-                points[pointIndex + 1] = (radius + tRadius * ((float) Math.cos(radian))) * ((float) Math.sin(localRadian));
-                points[pointIndex + 2] = (tRadius * (float) Math.sin(radian));
-
-                pointIndex += 3;
-
-                double r = radiusIndex < tubeDivisions ? tubeFraction * radiusIndex * 2.0F * Math.PI : 0.0f;
-                texCoords[texIndex] = (0.5F + (float) (Math.sin(r) * 0.5D));
-                ;
-                texCoords[texIndex + 1] = ((float) (Math.cos(r) * 0.5D) + 0.5F);
-
-                texIndex += 2;
-
-            }
-
-        }
-        //create faces
-        for (int point = 0; point < tubeDivisions; point++) {
-            for (int crossSection = 0; crossSection < radiusDivisions; crossSection++) {
-                p0 = point * radiusDivisions + crossSection;
-                p1 = p0 >= 0 ? p0 + 1 : p0 - radiusDivisions;
-                p1 = p1 % radiusDivisions != 0 ? p0 + 1 : p0 - (radiusDivisions - 1);
-                p2 = (p0 + radiusDivisions) < ((tubeDivisions * radiusDivisions)) ? p0 + radiusDivisions : p0 - (tubeDivisions * radiusDivisions) + radiusDivisions;
-                p3 = p2 < ((tubeDivisions * radiusDivisions) - 1) ? p2 + 1 : p2 - (tubeDivisions * radiusDivisions) + 1;
-                p3 = p3 % (radiusDivisions) != 0 ? p2 + 1 : p2 - (radiusDivisions - 1);
-
-                t0 = point * radiusDivisions + crossSection;
-                t1 = t0 >= 0 ? t0 + 1 : t0 - radiusDivisions;
-                t1 = t1 % radiusDivisions != 0 ? t0 + 1 : t0 - (radiusDivisions - 1);
-                t2 = (t0 + radiusDivisions) < ((tubeDivisions * radiusDivisions)) ? t0 + radiusDivisions : t0 - (tubeDivisions * radiusDivisions) + radiusDivisions;
-                t3 = t2 < ((tubeDivisions * radiusDivisions) - 1) ? t2 + 1 : t2 - (tubeDivisions * radiusDivisions) + 1;
-                t3 = t3 % (radiusDivisions) != 0 ? t2 + 1 : t2 - (radiusDivisions - 1);
-
-                try {
-                    faces[faceIndex] = (p2);
-                    faces[faceIndex + 1] = (t3);
-                    faces[faceIndex + 2] = (p0);
-                    faces[faceIndex + 3] = (t2);
-                    faces[faceIndex + 4] = (p1);
-                    faces[faceIndex + 5] = (t0);
-
-                    faceIndex += FACE_SIZE;
-
-                    faces[faceIndex] = (p2);
-                    faces[faceIndex + 1] = (t3);
-                    faces[faceIndex + 2] = (p1);
-                    faces[faceIndex + 3] = (t0);
-                    faces[faceIndex + 4] = (p3);
-                    faces[faceIndex + 5] = (t1);
-                    faceIndex += FACE_SIZE;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        TriangleMesh localTriangleMesh = new TriangleMesh();
-        localTriangleMesh.getPoints().setAll(points);
-        localTriangleMesh.getTexCoords().setAll(texCoords);
-        localTriangleMesh.getFaces().setAll(faces);
-
-
-        return localTriangleMesh;
     }
 }
