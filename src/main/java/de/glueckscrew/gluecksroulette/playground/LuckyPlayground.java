@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Rotate;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,9 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     private LuckyBall ball;
 
     private List<LuckyStudentSegment> segments;
+
+    @Setter
+    private LuckyPlaygroundListener listener;
 
     @Getter
     private LuckyCourse currentCourse;
@@ -123,6 +127,10 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         lastProbabilityChange = student.getWeight();
         currentCourse.select(student);
         resizeSegments();
+
+        if (listener != null) {
+            listener.onSpinStop();
+        }
     }
 
     private LuckyStudentSegment getSegmentWithBall() {

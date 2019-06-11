@@ -40,6 +40,7 @@ public class LuckyPhysics {
     @Setter
     private LuckyBall luckyBall;
 
+    @Setter
     private LuckyPhysicsListener listener;
     @Getter
     private boolean spinning;
@@ -57,9 +58,6 @@ public class LuckyPhysics {
         return LuckyPhysics.instance;
     }
 
-    public void setListener(LuckyPhysicsListener listener) {
-        this.listener = listener;
-    }
 
     // calls tick(int steps) with a value of 1
     public int tick() {

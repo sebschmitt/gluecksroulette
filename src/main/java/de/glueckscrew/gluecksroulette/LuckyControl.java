@@ -10,6 +10,7 @@ import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKeyHandler;
 import de.glueckscrew.gluecksroulette.io.LuckyIO;
 import de.glueckscrew.gluecksroulette.models.LuckyCourse;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
+import de.glueckscrew.gluecksroulette.playground.LuckyPlaygroundListener;
 import javafx.application.Application;
 import javafx.scene.Camera;
 import javafx.scene.Scene;
@@ -33,7 +34,7 @@ import java.util.logging.Logger;
  *
  * @author Sebastian Schmitt
  */
-public class LuckyControl extends Application {
+public class LuckyControl extends Application implements LuckyPlaygroundListener {
     private static final Logger logger = Logger.getLogger(LuckyControl.class.getSimpleName());
 
     private Scene mainScene;
@@ -50,6 +51,7 @@ public class LuckyControl extends Application {
 
         config = new LuckyConfig();
         playground = new LuckyPlayground(config);
+        playground.setListener(this);
         gui = new LuckyGUI(playground, config);
 
         mainScene = new Scene(gui, config.getInt(LuckyConfig.Key.WINDOW_WIDTH),
@@ -96,29 +98,7 @@ public class LuckyControl extends Application {
         mainScene.setOnKeyReleased(hotKeyHandler.keyReleased());
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP), gui::toggleHints);
-        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> {
-            playground.spin();
-
-            if (PlatformUtil.isWindows() && config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE)) {
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        User32.INSTANCE.EnumWindows((hWnd, userData) -> {
-                            char[] windowText = new char[512];
-                            User32.INSTANCE.GetWindowText(hWnd, windowText, 512);
-                            String wText = Native.toString(windowText);
-
-                            if (wText.toLowerCase().contains(config.getString(LuckyConfig.Key.FOCUS_CHANGE_WINDOW_NAME))) {
-                                User32.INSTANCE.SetForegroundWindow(hWnd);
-                                return false;
-                            }
-                            return true;
-                        }, null);
-
-                    }
-                }, TimeUnit.SECONDS.toMillis(config.getInt(LuckyConfig.Key.FOCUS_CHANGE_TIMEOUT_SECONDS)));
-            }
-        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> playground.spin());
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> playground.hardReset());
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> playground.softReset());
@@ -186,6 +166,29 @@ public class LuckyControl extends Application {
         hotKeyHandler.register(new LuckyHotKey(KeyCode.RIGHT), () -> camera.setTranslateX(camera.getTranslateX() + 10));
         hotKeyHandler.register(new LuckyHotKey(KeyCode.W), () -> camera.setTranslateZ(camera.getTranslateZ() + 10));
         hotKeyHandler.register(new LuckyHotKey(KeyCode.S), () -> camera.setTranslateZ(camera.getTranslateZ() - 10));
+    }
+
+    @Override
+    public void onSpinStop() {
+        if (PlatformUtil.isWindows() && config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE)) {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    User32.INSTANCE.EnumWindows((hWnd, userData) -> {
+                        char[] windowText = new char[512];
+                        User32.INSTANCE.GetWindowText(hWnd, windowText, 512);
+                        String wText = Native.toString(windowText);
+
+                        if (wText.toLowerCase().contains(config.getString(LuckyConfig.Key.FOCUS_CHANGE_WINDOW_NAME))) {
+                            User32.INSTANCE.SetForegroundWindow(hWnd);
+                            return false;
+                        }
+                        return true;
+                    }, null);
+
+                }
+            }, TimeUnit.SECONDS.toMillis(config.getInt(LuckyConfig.Key.FOCUS_CHANGE_TIMEOUT_SECONDS)));
+        }
     }
 
     public static void main(String[] args) {
