@@ -88,14 +88,14 @@ public class LuckyPlayground extends SubScene {
         physics.setLuckyBall(ball);
 
 
-        LuckyCone cone = new LuckyCone();
+        LuckyFrame cone = new LuckyFrame(WHEEL_RADIUS);
         PhongMaterial mat = new PhongMaterial(Color.RED);
         mat.setSpecularColor(Color.WHITE);
         cone.setMaterial(mat);
 
         wheel.getChildren().add(cone);
 
-        LuckyCenterCone center = new LuckyCenterCone();
+        LuckyCone center = new LuckyCone(wheel.getColonRadius());
         center.setMaterial(mat);
 
         wheel.getChildren().add(center);
