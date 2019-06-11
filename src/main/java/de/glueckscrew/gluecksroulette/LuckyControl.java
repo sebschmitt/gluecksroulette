@@ -75,7 +75,7 @@ public class LuckyControl extends Application {
                             String wText = Native.toString(windowText);
                             wText = (wText.isEmpty()) ? "" : "; text: " + wText;
 
-                            if (wText.contains(config.getString(LuckyConfig.Key.FOCUS_CHANGE_WINDOW_NAME))) {
+                            if (wText.toLowerCase().contains(config.getString(LuckyConfig.Key.FOCUS_CHANGE_WINDOW_NAME))) {
                                 User32.INSTANCE.SetForegroundWindow(hWnd);
                                 return false;
                             }
