@@ -192,6 +192,12 @@ public class LuckyConfig {
         HOTKEY_OPEN_COURSE_FILE(LuckyHotKey.class, new LuckyHotKey(KeyCode.O, KeyCode.CONTROL)),
         HOTKEY_SAVE_COURSE_FILE(LuckyHotKey.class, new LuckyHotKey(KeyCode.S, KeyCode.CONTROL)),
 
+        HOTKEY_FOCUS_CHANGE_TOGGLE(LuckyHotKey.class, new LuckyHotKey(KeyCode.F)),
+        FOCUS_CHANGE_WINDOW_NAME(String.class, "powerpoint"),
+        FOCUS_CHANGE_TIMEOUT_SECONDS(int.class, 10),
+        FOCUS_CHANGE_ACTIVE(boolean.class, true),
+
+
         ;
 
         @Getter
