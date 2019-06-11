@@ -1,7 +1,7 @@
 package de.glueckscrew.gluecksroulette.playground;
 
-import com.sun.javafx.tk.Toolkit;
 import de.glueckscrew.gluecksroulette.models.LuckyStudent;
+import de.glueckscrew.gluecksroulette.util.LuckyTextUtil;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -25,13 +25,18 @@ public class LuckyStudentSegment extends Group {
 
     private static final Color TEXT_COLOR = Color.valueOf("#ecf0f1");
 
-    @Getter private LuckyStudent luckyStudent;
+    @Getter
+    private LuckyStudent luckyStudent;
 
-    @Setter private double offset;
-    @Setter private double step;
-    @Setter private Color color;
+    @Setter
+    private double offset;
+    @Setter
+    private double step;
+    @Setter
+    private Color color;
     private Text text;
-    @Getter private MeshView meshView;
+    @Getter
+    private MeshView meshView;
 
     public LuckyStudentSegment(LuckyStudent luckyStudent, Color color) {
         this.luckyStudent = luckyStudent;
@@ -57,7 +62,7 @@ public class LuckyStudentSegment extends Group {
     public void update() {
         text.setText(luckyStudent.getName());
 
-        Pair<Double, Double> position = calculatePosition(offset + step, 0.9 - getTextLength(text) / (double) LuckyPlayground.WHEEL_RADIUS);
+        Pair<Double, Double> position = calculatePosition(offset + step, 0.9 - LuckyTextUtil.getTextLength(text) / (double) LuckyPlayground.WHEEL_RADIUS);
         text.setTranslateX(position.getKey());
         text.setTranslateZ(position.getValue());
 
@@ -83,10 +88,6 @@ public class LuckyStudentSegment extends Group {
         double y = Math.sin(t) * LuckyPlayground.WHEEL_RADIUS * length;
 
         return new Pair<>(x, y);
-    }
-
-    private static double getTextLength(Text text) {
-        return Toolkit.getToolkit().getFontLoader().computeStringWidth(text.getText(), text.getFont());
     }
 
     private static TriangleMesh createMesh(double segmentSize) {
@@ -234,7 +235,7 @@ public class LuckyStudentSegment extends Group {
             faces[fIndex + 1] = t0;
             faces[fIndex + 2] = p1;
             faces[fIndex + 3] = t1;
-            faces[fIndex + 4] = segmentSize == 2 && p2 % div == 0 ? p2  - div : p2;
+            faces[fIndex + 4] = segmentSize == 2 && p2 % div == 0 ? p2 - div : p2;
             faces[fIndex + 5] = t2;
             fIndex += 6;
         }

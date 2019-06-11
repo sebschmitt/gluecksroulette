@@ -1,9 +1,8 @@
 package de.glueckscrew.gluecksroulette;
 
+import com.sun.javafx.PlatformUtil;
 import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
 import de.glueckscrew.gluecksroulette.config.LuckyConfig;
 import de.glueckscrew.gluecksroulette.gui.LuckyGUI;
 import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKey;
@@ -22,6 +21,9 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,30 +65,38 @@ public class LuckyControl extends Application {
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> {
             playground.spin();
 
-            User32.INSTANCE.EnumWindows(new User32.WNDENUMPROC() {
+            if (PlatformUtil.isWindows() && config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE)) {
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        User32.INSTANCE.EnumWindows((hWnd, userData) -> {
+                            char[] windowText = new char[512];
+                            User32.INSTANCE.GetWindowText(hWnd, windowText, 512);
+                            String wText = Native.toString(windowText);
+                            wText = (wText.isEmpty()) ? "" : "; text: " + wText;
 
-                int count;
-
-                public boolean callback(WinDef.HWND hWnd, Pointer userData) {
-                    char[] windowText = new char[512];
-                    User32.INSTANCE.GetWindowText(hWnd, windowText, 512);
-                    String wText = Native.toString(windowText);
-                    wText = (wText.isEmpty()) ? "" : "; text: " + wText;
-                    System.out.println("Found window " + hWnd + ", total " + ++count + wText);
-
-                    if (wText.contains("WINDOW NAME")) {
-                        boolean x = User32.INSTANCE.SetForegroundWindow(hWnd);
-                        System.out.println("worked: " +x);
-                        return false;
+                            if (wText.toLowerCase().contains(config.getString(LuckyConfig.Key.FOCUS_CHANGE_WINDOW_NAME))) {
+                                User32.INSTANCE.SetForegroundWindow(hWnd);
+                                return false;
+                            }
+                            return true;
+                        }, null);
                     }
-                    return true;
-                }
-            },null);
+                }, TimeUnit.SECONDS.toMillis(config.getInt(LuckyConfig.Key.FOCUS_CHANGE_TIMEOUT_SECONDS)));
+            }
         });
+
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> playground.hardReset());
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> playground.softReset());
 
-        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE), () ->  {
+        if (PlatformUtil.isWindows())
+            hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_FOCUS_CHANGE_TOGGLE), () -> {
+                        config.set(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE, !config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE));
+                        gui.toggleFocusChange();
+                    }
+            );
+
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE), () -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Course File");
             File file = fileChooser.showOpenDialog(primaryStage);
