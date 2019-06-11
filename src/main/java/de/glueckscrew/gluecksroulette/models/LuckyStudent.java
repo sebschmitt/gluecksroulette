@@ -17,7 +17,7 @@ public class LuckyStudent implements Cloneable {
     private static final String SERIALIZE_DELIMITER = ",";
 
     private String name;
-    private double probability;
+    private double weight;
 
     private LuckyStudent() {
         this("", 1.0);
@@ -27,13 +27,13 @@ public class LuckyStudent implements Cloneable {
         this(name, 1.0);
     }
 
-    public LuckyStudent(String name, double probability) {
+    public LuckyStudent(String name, double weight) {
         this.name = name;
-        this.probability = probability;
+        this.weight = weight;
     }
 
     public String serialize() {
-        return String.format(Locale.US, "%s%s%f", this.getName(), SERIALIZE_DELIMITER, this.getProbability());
+        return String.format(Locale.US, "%s%s%f", this.getName(), SERIALIZE_DELIMITER, this.getWeight());
     }
 
     public static LuckyStudent deserialize(String data) {
@@ -41,29 +41,29 @@ public class LuckyStudent implements Cloneable {
 
         if (studentData.length < 1 || studentData.length > 2) {
             logger.log(Level.SEVERE, String.format(
-                "Student data doesn't match the following pattern: name[,probability]%nData: %s",
+                "Student data doesn't match the following pattern: name[,weight]%nData: %s",
                 data));
             return null;
         }
 
-        double probability = 1.0;
+        double weight = 1.0;
 
         try {
-            probability = Double.parseDouble(studentData[1]);
+            weight = Double.parseDouble(studentData[1]);
         } catch (NumberFormatException nfe) {
             logger.log(Level.SEVERE,
-                String.format("Found an invalid value for probability. Full Trace Back:%n"),
+                String.format("Found an invalid value for weight. Full Trace Back:%n"),
                 nfe);
             return null;
         } catch (IndexOutOfBoundsException ioobe) {
-            logger.log(Level.FINER, "No value for probability found. Use default value 1.0");
+            logger.log(Level.FINER, "No value for weight found. Use default value 1.0");
         }
 
-        return new LuckyStudent(studentData[0], probability);
+        return new LuckyStudent(studentData[0], weight);
     }
 
     @Override
     public LuckyStudent clone() {
-        return new LuckyStudent(name, probability);
+        return new LuckyStudent(name, weight);
     }
 }
