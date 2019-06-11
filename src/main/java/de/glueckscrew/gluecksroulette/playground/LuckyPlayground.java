@@ -138,14 +138,14 @@ public class LuckyPlayground extends SubScene {
     }
 
     private void resizeSegments() {
-        double lowest = currentCourse.getStudents().stream().mapToDouble(LuckyStudent::getProbability).min().orElse(1);
-        double sum = currentCourse.getStudents().stream().mapToDouble(LuckyStudent::getProbability).sum();
+        double lowest = currentCourse.getStudents().stream().mapToDouble(LuckyStudent::getWeight).min().orElse(1);
+        double sum = currentCourse.getStudents().stream().mapToDouble(LuckyStudent::getWeight).sum();
 
         double factor = 1 / (sum / lowest);
         double offset = 0;
 
         for (LuckyStudentSegment segment : segments) {
-            double segmentStep = segment.getLuckyStudent().getProbability() / lowest * factor;
+            double segmentStep = segment.getLuckyStudent().getWeight() / lowest * factor;
 
             segment.setStep(segmentStep);
             segment.setOffset(offset);
@@ -158,8 +158,8 @@ public class LuckyPlayground extends SubScene {
     public void softReset() {
         if (lastChangedSegment == null) return;
 
-        lastChangedSegment.getLuckyStudent().setProbability(
-                lastChangedSegment.getLuckyStudent().getProbability() + lastProbabilityChange);
+        lastChangedSegment.getLuckyStudent().setWeight(
+                lastChangedSegment.getLuckyStudent().getWeight() + lastProbabilityChange);
 
     }
 

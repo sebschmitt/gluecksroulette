@@ -19,11 +19,11 @@ public class LuckyStudentTest {
 
         // when
         String name = student.getName();
-        double probability = student.getProbability();
+        double weight = student.getWeight();
 
         // then
         assertEquals("Bob", name);
-        assertEquals(1.0, probability, DELTA);
+        assertEquals(1.0, weight, DELTA);
     }
 
     @Test
@@ -33,11 +33,11 @@ public class LuckyStudentTest {
 
         // when
         student.setName("Alice");
-        student.setProbability(2.0);
+        student.setWeight(2.0);
 
         // then
         assertEquals("Alice", student.getName());
-        assertEquals(2.0, student.getProbability(), DELTA);
+        assertEquals(2.0, student.getWeight(), DELTA);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class LuckyStudentTest {
 
         // then
         assertEquals("Bob", student.getName());
-        assertEquals(1.0, student.getProbability(), DELTA);
+        assertEquals(1.0, student.getWeight(), DELTA);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class LuckyStudentTest {
 
         // then
         assertEquals("Bob", student.getName());
-        assertEquals(2.5, student.getProbability(), DELTA);
+        assertEquals(2.5, student.getWeight(), DELTA);
     }
 
     @Test
