@@ -63,10 +63,10 @@ public class LuckyCourse implements Cloneable {
             studentWeightLowest = newWeight;
         }
 
-        logger.log(Level.INFO, "count low: " + countStudentWeightLow);
         if (countStudentWeightLow == students.size()) {
             normalizeWeights();
         }
+        logger.log(Level.INFO, "selected student: " + student.getName());
     }
 
     private void normalizeWeights() {

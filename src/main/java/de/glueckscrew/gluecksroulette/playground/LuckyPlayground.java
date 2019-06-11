@@ -128,17 +128,16 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     private LuckyStudentSegment getSegmentWithBall() {
         // get wheel rotation
         Rotate rotate = (Rotate) wheel.getTransforms().get(0);
-        // rotation angle along positive y, however checkBallPosition goes counter clockwise, so get inverse angle
-        double wheelDeg = (360 - rotate.getAngle()) % 360;
+        // rotation angle along positive y
+        double wheelDeg = rotate.getAngle();
 
         // get ball angle relative to wheel rotation
         // add 360 so we get positive (modulus) over possibly negative remainder
         double deg = (360 + checkBallPosition() - wheelDeg) % 360;
 
         for (LuckyStudentSegment segment : segments) {
-            // same as above for wheelDeg, get inverse angles
-            double endDeg = 360 - (segment.getOffset()) * 360;
-            double startDeg = 360 - (segment.getOffset() + segment.getStep()) * 360;
+            double startDeg = (segment.getOffset()) * 360;
+            double endDeg = (segment.getOffset() + segment.getStep()) * 360;
             if (startDeg <= deg && deg < endDeg) {
                 return segment;
             }
@@ -155,7 +154,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         if (rad < 0) {
             rad = 2*Math.PI + rad;
         }
-        return Math.toDegrees(rad);
+        return 360 - Math.toDegrees(rad);  // return clockwise rotation angle
     }
 
     public void setCurrentCourse(LuckyCourse currentCourse) {
