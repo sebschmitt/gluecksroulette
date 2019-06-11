@@ -93,7 +93,7 @@ public class LuckyPlayground extends SubScene {
         mat.setSpecularColor(Color.WHITE);
         cone.setMaterial(mat);
 
-        wheel.getChildren().add(cone);
+        //wheel.getChildren().add(cone);
 
         LuckyCone center = new LuckyCone(wheel.getColonRadius());
         center.setMaterial(mat);
