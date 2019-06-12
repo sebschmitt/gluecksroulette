@@ -12,6 +12,7 @@ import de.glueckscrew.gluecksroulette.models.LuckyCourse;
 import de.glueckscrew.gluecksroulette.models.LuckyStudent;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlaygroundListener;
+import de.glueckscrew.gluecksroulette.util.LuckyFileUtil;
 import javafx.application.Application;
 import javafx.scene.Camera;
 import javafx.scene.Scene;
@@ -21,12 +22,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -153,21 +151,15 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
             lastCourseFile = fileChooser.showOpenDialog(primaryStage);
 
             if (lastCourseFile != null) {
-                try {
-                    LuckyCourse course = LuckyCourse.deserialize(LuckyIO.read(new FileInputStream(lastCourseFile)), lastCourseFile.getName());
-
+                LuckyCourse course = LuckyFileUtil.loadCourse(lastCourseFile, LOGGER);
+                if (course != null) {
                     playground.setCurrentCourse(course);
                     primaryStage.setTitle(course.getIdentifier());
-                } catch (FileNotFoundException e) {
-                    lastCourseFile = null;
-                    LOGGER.log(Level.SEVERE, String.format("FileNotFoundException thrown. Relying on default values%n"), e);
-                } catch (SecurityException e) {
-                    LOGGER.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n",
-                            lastCourseFile.getAbsolutePath()), e);
-                    lastCourseFile = null;
+                    config.set(LuckyConfig.Key.LAST_COURSE, lastCourseFile.getAbsolutePath());
                 }
             }
         });
+
 
         primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) hotKeyHandler.releaseAll();
@@ -189,6 +181,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
     private void saveCourseFile() {
         if (lastCourseFile == null) return;
         LOGGER.info("Coursefile autosave");
+        config.set(LuckyConfig.Key.LAST_COURSE, lastCourseFile.getAbsolutePath());
         LuckyIO.write(lastCourseFile, playground.getCurrentCourse().serialize());
     }
 
@@ -220,6 +213,11 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
                 }
             }, TimeUnit.SECONDS.toMillis(config.getInt(LuckyConfig.Key.FOCUS_CHANGE_TIMEOUT_SECONDS)));
         }
+    }
+
+    @Override
+    public void onCourseNameChanged() {
+        primaryStage.setTitle(playground.getCurrentCourse().getIdentifier());
     }
 
     public static void main(String[] args) {

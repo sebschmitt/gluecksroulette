@@ -210,6 +210,7 @@ public class LuckyConfig {
         HOTKEY_REDUCE(LuckyHotKey.class, new LuckyHotKey(KeyCode.MINUS)),
         HOTKEY_ENLARGE(LuckyHotKey.class, new LuckyHotKey(KeyCode.PLUS)),
 
+        LAST_COURSE(String.class, "");
 
         ;
 
