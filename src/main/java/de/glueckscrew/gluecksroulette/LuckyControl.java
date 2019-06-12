@@ -9,6 +9,7 @@ import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKey;
 import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKeyHandler;
 import de.glueckscrew.gluecksroulette.io.LuckyIO;
 import de.glueckscrew.gluecksroulette.models.LuckyCourse;
+import de.glueckscrew.gluecksroulette.models.LuckyStudent;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlaygroundListener;
 import javafx.application.Application;
@@ -104,7 +105,10 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         mainScene.setOnKeyReleased(hotKeyHandler.keyReleased());
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP), gui::toggleHints);
-        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> playground.spin());
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> {
+            gui.fadeOutSelectedStudent();
+            playground.spin();
+        });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> playground.hardReset());
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> playground.softReset());
@@ -185,6 +189,11 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
     @Override
     public void onSpinStop() {
+        LuckyStudent student = playground.getSelectedStudent();
+        if (student != null)
+            gui.showSelectedStudent(student);
+
+
         if (PlatformUtil.isWindows() && config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE)) {
             new Timer().schedule(new TimerTask() {
                 @Override
