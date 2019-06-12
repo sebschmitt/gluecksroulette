@@ -102,7 +102,7 @@ public class LuckyPlayground extends SubScene {
         PhongMaterial coneMat = new PhongMaterial(LuckyStudentSegment.RED);
         coneMat.setSpecularColor(Color.WHITE);
         cone.setMaterial(coneMat);
-        wheel.getChildren().add(cone);
+        //wheel.getChildren().add(cone);
 
         setCurrentCourse(DUMMY_COURSE);
     }
