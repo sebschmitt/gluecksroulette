@@ -121,6 +121,18 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         wheel.getChildren().add(cone);
 
         setCurrentCourse(DUMMY_COURSE);
+
+        new AnimationTimer() {
+            private long lastUpdate = 0;
+
+            @Override
+            public void handle(long now) {
+                if (now - lastUpdate < MIN_TICK_DURATION) return;
+
+                physics.tick();
+                lastUpdate = now;
+            }
+        }.start();
     }
 
     public LuckyStudent getSelectedStudent() {
@@ -207,19 +219,6 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
 
 
         resizeSegments();
-
-
-        new AnimationTimer() {
-            private long lastUpdate = 0;
-
-            @Override
-            public void handle(long now) {
-                if (now - lastUpdate < MIN_TICK_DURATION) return;
-
-                physics.tick();
-                lastUpdate = now;
-            }
-        }.start();
     }
 
     private void resizeSegments() {

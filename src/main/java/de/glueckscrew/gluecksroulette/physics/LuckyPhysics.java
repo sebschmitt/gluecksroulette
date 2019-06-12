@@ -157,7 +157,6 @@ public class LuckyPhysics {
                     && distanceCenterD >= LuckyPlayground.WHEEL_RADIUS - ball.getRadius() * 2
                     && ballCollidesFrame();
             boolean collidesBorder = distanceCenterD > LuckyPlayground.WHEEL_RADIUS + frame.getHeight() - ball.getRadius();
-            System.out.println();
 
             boolean collides = collidesBaseWheel || collidesBorder || collidesFrame || collidesCenterColon;
 
