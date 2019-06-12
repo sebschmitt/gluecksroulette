@@ -78,6 +78,19 @@ public class LuckyStudentTest {
     }
 
     @Test
+    public void testLeadingAndTrailingSpaces() {
+        // given
+        LuckyStudent expected = new LuckyStudent("Bob", 1.0);
+        String data = " Bob  ,      1.0  ";
+
+        // when
+        LuckyStudent actual = LuckyStudent.deserialize(data);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testDeserializePrecisionOne() {
         // given
         LuckyStudent expected = new LuckyStudent("Bob", 1.0);
