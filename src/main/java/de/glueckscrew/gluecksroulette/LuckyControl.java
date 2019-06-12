@@ -51,7 +51,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
         config = new LuckyConfig();
 
-        playground = new LuckyPlayground(config);
+        playground = new LuckyPlayground(config, getParameters().getRaw());
         playground.setListener(this);
         gui = new LuckyGUI(playground, config);
 

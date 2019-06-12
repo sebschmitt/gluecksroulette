@@ -61,7 +61,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     private LuckyStudentSegment lastChangedSegment;
     private double lastProbabilityChange;
 
-    public LuckyPlayground(LuckyConfig config) {
+    public LuckyPlayground(LuckyConfig config, List<String> parameters) {
         super(new Group(), config.getInt(LuckyConfig.Key.WINDOW_WIDTH),
                 config.getInt(LuckyConfig.Key.WINDOW_HEIGHT), true, SceneAntialiasing.BALANCED);
 
@@ -122,11 +122,19 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         cone.setMaterial(coneMat);
         wheel.getChildren().add(cone);
 
-        LuckyCourse course = LuckyFileUtil.loadCourse(new File(config.getString(LuckyConfig.Key.LAST_COURSE)), LOGGER);
+        File file;
+        if (parameters.size() > 0) {
+            file = new File(parameters.get(0));
+        } else {
+            file = new File(config.getString(LuckyConfig.Key.LAST_COURSE));
+        }
+        LuckyCourse course = LuckyFileUtil.loadCourse(file, LOGGER);
+
         if (course != null) {
             setCurrentCourse(course);
             if (listener != null)
                 listener.onCourseNameChanged();
+            config.set(LuckyConfig.Key.LAST_COURSE, file.getAbsolutePath());
         } else if (currentCourse == null) {
             setCurrentCourse(DUMMY_COURSE);
         }
