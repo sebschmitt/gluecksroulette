@@ -5,6 +5,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -12,6 +13,21 @@ import java.util.Map;
  * @author Sebastian Schmitt
  */
 public class LuckyHotKeyHandler {
+    private static HashMap<KeyCode, KeyCode> US_DE_TRANSLATION;
+    private static boolean useTranslation;
+
+    static {
+        useTranslation = Locale.getDefault().equals(Locale.GERMAN) || Locale.getDefault().equals(Locale.GERMANY);
+
+        if (useTranslation) {
+            US_DE_TRANSLATION = new HashMap<KeyCode, KeyCode>() {{
+                put(KeyCode.BACK_SLASH, KeyCode.NUMBER_SIGN);
+                put(KeyCode.CLOSE_BRACKET, KeyCode.PLUS);
+                put(KeyCode.SLASH, KeyCode.MINUS);
+            }};
+        }
+    }
+
     private HashMap<KeyCode, Boolean> keyStates;
     private HashMap<LuckyHotKey, Callback> hotKeys;
     private EventHandler<? super KeyEvent> keyPressed;
@@ -23,11 +39,19 @@ public class LuckyHotKeyHandler {
 
 
         keyPressed = (EventHandler<KeyEvent>) event -> {
-            keyStates.put(event.getCode(), true);
+            if (useTranslation && US_DE_TRANSLATION.containsKey(event.getCode()))
+                keyStates.put(US_DE_TRANSLATION.get(event.getCode()), true);
+            else
+                keyStates.put(event.getCode(), true);
             handle();
         };
 
-        keyReleased = (EventHandler<KeyEvent>) event -> keyStates.put(event.getCode(), false);
+        keyReleased = (EventHandler<KeyEvent>) event -> {
+            if (useTranslation && US_DE_TRANSLATION.containsKey(event.getCode()))
+                keyStates.put(US_DE_TRANSLATION.get(event.getCode()), false);
+            else
+                keyStates.put(event.getCode(), false);
+        };
     }
 
     public void release(LuckyHotKey hotKey) {

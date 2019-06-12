@@ -208,8 +208,8 @@ public class LuckyConfig {
         HOTKEY_TOGGLE_MODE(LuckyHotKey.class, new LuckyHotKey(KeyCode.M)),
         MODE(LuckyMode.class, LuckyMode.CONSERVING),
 
-        HOTKEY_REDUCE(LuckyHotKey.class, new LuckyHotKey(KeyCode.SLASH)),
-        HOTKEY_ENLARGE(LuckyHotKey.class, new LuckyHotKey(KeyCode.CLOSE_BRACKET)),
+        HOTKEY_REDUCE(LuckyHotKey.class, new LuckyHotKey(KeyCode.MINUS)),
+        HOTKEY_ENLARGE(LuckyHotKey.class, new LuckyHotKey(KeyCode.PLUS)),
 
 
         ;
