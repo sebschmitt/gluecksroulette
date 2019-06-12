@@ -1,5 +1,6 @@
 package de.glueckscrew.gluecksroulette.config;
 
+import de.glueckscrew.gluecksroulette.LuckyMode;
 import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKey;
 import de.glueckscrew.gluecksroulette.io.LuckyIO;
 import javafx.scene.input.KeyCode;
@@ -92,6 +93,8 @@ public class LuckyConfig {
                 value = Boolean.parseBoolean(valueString);
             } else if (typeClass == LuckyHotKey.class) {
                 value = LuckyHotKey.deserialize(valueString);
+            } else if (typeClass == LuckyMode.class) {
+                value = LuckyMode.valueOf(valueString);
             }
 
 
@@ -108,44 +111,49 @@ public class LuckyConfig {
 
     }
 
-    public int getInt(Key key) {
+    @SuppressWarnings("unchecked")
+    private <T> T get(Key key, Class<T> type) {
         if (values.containsKey(key))
-            return (int) values.get(key);
+            return (T) values.get(key);
 
-        return (int) key.getDefaultValue();
+        return getDefault(key, type);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getDefault(Key key, Class<T> type) {
+        return (T) key.getDefaultValue();
+    }
+
+    public int getInt(Key key) {
+        return get(key, Integer.class);
     }
 
     public int getDefaultInt(Key key) {
-        return (int) key.getDefaultValue();
+        return getDefault(key, Integer.class);
     }
 
     public String getString(Key key) {
-        if (values.containsKey(key))
-            return (String) values.get(key);
-
-        return (String) key.getDefaultValue();
+        return get(key, String.class);
     }
 
     public String getDefaultString(Key key) {
-        return (String) key.getDefaultValue();
+        return getDefault(key, String.class);
     }
 
     public boolean getBool(Key key) {
-        if (values.containsKey(key))
-            return (boolean) values.get(key);
-
-        return (boolean) key.getDefaultValue();
+        return get(key, Boolean.class);
     }
 
     public boolean getDefaultBool(Key key) {
-        return (boolean) key.getDefaultValue();
+        return getDefault(key, Boolean.class);
     }
 
     public LuckyHotKey getHotKey(Key key) {
-        if (values.containsKey(key))
-            return (LuckyHotKey) values.get(key);
+        return get(key, LuckyHotKey.class);
+    }
 
-        return (LuckyHotKey) key.getDefaultValue();
+    public LuckyMode getMode(Key key) {
+        return get(key, LuckyMode.class);
     }
 
     public void set(Key key, Object value) {
@@ -196,6 +204,12 @@ public class LuckyConfig {
         FOCUS_CHANGE_WINDOW_NAME(String.class, "powerpoint"),
         FOCUS_CHANGE_TIMEOUT_SECONDS(Integer.class, 10),
         FOCUS_CHANGE_ACTIVE(Boolean.class, true),
+
+        HOTKEY_TOGGLE_MODE(LuckyHotKey.class, new LuckyHotKey(KeyCode.M)),
+        MODE(LuckyMode.class, LuckyMode.CONSERVING),
+
+        HOTKEY_REDUCE(LuckyHotKey.class, new LuckyHotKey(KeyCode.SLASH)),
+        HOTKEY_ENLARGE(LuckyHotKey.class, new LuckyHotKey(KeyCode.CLOSE_BRACKET)),
 
 
         ;

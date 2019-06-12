@@ -42,6 +42,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
     private LuckyPlayground playground;
     private LuckyGUI gui;
     private LuckyConfig config;
+    private LuckyMode luckyMode;
 
     @Override
     public void start(Stage primaryStage) {
@@ -50,6 +51,8 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         this.primaryStage = primaryStage;
 
         config = new LuckyConfig();
+        luckyMode = config.getMode(LuckyConfig.Key.MODE);
+
         playground = new LuckyPlayground(config);
         playground.setListener(this);
         gui = new LuckyGUI(playground, config);
@@ -61,6 +64,9 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         playground.heightProperty().bind(mainScene.heightProperty());
         playground.widthProperty().bind(mainScene.widthProperty());
 
+        /*
+         * Move camera on resize so wheel is always centered
+         */
         Camera camera = playground.getCamera();
         mainScene.widthProperty().addListener((obs, oldVal, newVal) -> {
             config.set(LuckyConfig.Key.WINDOW_WIDTH, newVal.intValue());
@@ -103,10 +109,28 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> playground.hardReset());
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> playground.softReset());
 
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_REDUCE), () -> {
+            if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.CONSERVING)
+                playground.reduceSelected();
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_ENLARGE), () -> {
+            if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.CONSERVING)
+                playground.enlargeSelected();
+         });
+
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_MODE),  () -> {
+            if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.CONSERVING)
+                config.set(LuckyConfig.Key.MODE, LuckyMode.THINNING);
+            else
+                config.set(LuckyConfig.Key.MODE, LuckyMode.CONSERVING);
+
+            gui.updateMode();
+        });
+
         if (PlatformUtil.isWindows())
             hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_FOCUS_CHANGE_TOGGLE), () -> {
                         config.set(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE, !config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE));
-                        gui.toggleFocusChange();
+                        gui.updateFocusChange();
                     }
             );
 
