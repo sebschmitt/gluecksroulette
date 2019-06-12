@@ -176,7 +176,6 @@ public class LuckyGUI extends Group {
     public void showSelectedStudent(LuckyStudent student) {
         selectedStudentChanged = true;
         selectedStudent.setText(student.getName());
-        selectedStudent.setOpacity(1d);
 
 
         FadeTransition fadeInTransition = new FadeTransition(FADE_IN_DURATION, selectedStudent);
