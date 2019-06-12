@@ -1,15 +1,16 @@
 package de.glueckscrew.gluecksroulette.models;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import lombok.Data;
 
 /**
  * @author Florian Dahlitz
  */
 @Data
-public class LuckyCourse {
+public class LuckyCourse implements Cloneable {
 
     private static Logger logger = Logger.getLogger(LuckyCourse.class.getSimpleName());
 
@@ -41,5 +42,15 @@ public class LuckyCourse {
         }
 
         return new LuckyCourse(identifier, new ArrayList<>(students));
+    }
+
+
+    @Override
+    public LuckyCourse clone() {
+        List<LuckyStudent> clonedStudents = new ArrayList<>();
+
+        students.forEach(student -> clonedStudents.add(student.clone()));
+
+        return new LuckyCourse(identifier, clonedStudents);
     }
 }

@@ -1,6 +1,8 @@
 package de.glueckscrew.gluecksroulette.gui;
 
+import com.sun.javafx.PlatformUtil;
 import de.glueckscrew.gluecksroulette.config.LuckyConfig;
+import de.glueckscrew.gluecksroulette.util.LuckyTextUtil;
 import javafx.scene.Group;
 import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
@@ -44,6 +46,15 @@ public class LuckyGUI extends Group {
     private Text toggleHint;
 
     /**
+     * Shows state of auto focus change
+     */
+    private Text focusChangeActiveHint;
+
+    /**
+     * State of automatic focus change
+     */
+    private boolean focusChangeActive = true;
+    /**
      * Instance of the config
      */
     private LuckyConfig config;
@@ -58,40 +69,56 @@ public class LuckyGUI extends Group {
                 config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP).toPrettyString()));
         toggleHint.setFill(Color.WHITE);
 
+        focusChangeActiveHint = new Text("Focus change");
+        if (config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE))
+            focusChangeActiveHint.setFill(Color.GREEN);
+        else
+            focusChangeActiveHint.setFill(Color.RED);
+
+
         /*
          * Hint how to spin the roulette
          */
-        Text spinHint = new Text(String.format("Press %s to spin the roulette!",
-                config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN).toPrettyString()));
-        spinHint.setFill(Color.WHITE);
-        spinHint.setVisible(false);
-        toggleableHints.add(spinHint);
+        toggleableHints.add(createToggleableHint(String.format("Press %s to spin the roulette!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN).toPrettyString())));
 
         /*
          * Hint for soft reset
          */
-        Text softResetHint = new Text(String.format("Press %s for soft reset!",
-                config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET).toPrettyString()));
-        softResetHint.setFill(Color.WHITE);
-        softResetHint.setVisible(false);
-        toggleableHints.add(softResetHint);
+        toggleableHints.add(createToggleableHint(String.format("Press %s for soft reset!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET).toPrettyString())));
 
         /*
          * Hint for hard reset
          */
-        Text hardResetHint = new Text(String.format("Press %s for hard reset!",
-                config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET).toPrettyString()));
-        hardResetHint.setFill(Color.WHITE);
-        hardResetHint.setVisible(false);
-        toggleableHints.add(hardResetHint);
+        toggleableHints.add(createToggleableHint(String.format("Press %s for hard reset!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET).toPrettyString())));
+        /*
+         * Hint for open course file
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s to open course!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE).toPrettyString())));
+
+        /*
+         * Hint for saving course file
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s to save course!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE).toPrettyString())));
+
+        /*
+         * Hint for toggling focus change
+         */
+        if (PlatformUtil.isWindows())
+            toggleableHints.add(createToggleableHint(String.format("Press %s to toggle focus change!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_FOCUS_CHANGE_TOGGLE).toPrettyString())));
 
         /*  Playground needs to be first */
         getChildren().add(playground);
 
-        getChildren().add(toggleHint);
-        getChildren().add(spinHint);
-        getChildren().add(softResetHint);
-        getChildren().add(hardResetHint);
+        getChildren().addAll(toggleHint);
+        if (PlatformUtil.isWindows())
+            getChildren().add(focusChangeActiveHint);
+        getChildren().addAll(toggleableHints);
 
         update();
     }
@@ -109,6 +136,25 @@ public class LuckyGUI extends Group {
 
         toggleHint.xProperty().set(x);
         toggleHint.yProperty().set(y);
+
+        focusChangeActiveHint.xProperty().set(config.getInt(LuckyConfig.Key.WINDOW_WIDTH) - LuckyTextUtil.getTextLength(focusChangeActiveHint) - HINT_BLOCK_OFFSET);
+        focusChangeActiveHint.yProperty().set(HINT_TEXT_OFFSET);
+    }
+
+    /**
+     * Completly hides focus change hints because we are not on windows
+     */
+    public void disableFocusChange() {
+        focusChangeActiveHint.setVisible(false);
+    }
+
+    public void toggleFocusChange() {
+        focusChangeActive = !focusChangeActive;
+
+        if (focusChangeActive)
+            focusChangeActiveHint.setFill(Color.GREEN);
+        else
+            focusChangeActiveHint.setFill(Color.RED);
     }
 
     public void toggleHints() {
@@ -116,5 +162,13 @@ public class LuckyGUI extends Group {
 
         for (Text text : toggleableHints)
             text.setVisible(showHints);
+    }
+
+    private Text createToggleableHint(String text) {
+        Text hint = new Text(text);
+        hint.setFill(Color.WHITE);
+        hint.setVisible(false);
+
+        return hint;
     }
 }

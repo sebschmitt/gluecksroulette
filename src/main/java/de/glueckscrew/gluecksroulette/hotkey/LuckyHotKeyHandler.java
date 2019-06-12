@@ -30,6 +30,10 @@ public class LuckyHotKeyHandler {
         keyReleased = (EventHandler<KeyEvent>) event -> keyStates.put(event.getCode(), false);
     }
 
+    public void release(LuckyHotKey hotKey) {
+        hotKey.getKeyCodes().forEach(keyCode  -> keyStates.put(keyCode, false));
+    }
+
     public void register(LuckyHotKey hotKey, Callback callback) {
         hotKeys.put(hotKey, callback);
     }
@@ -40,7 +44,8 @@ public class LuckyHotKeyHandler {
 
     private void handle() {
         for (Map.Entry<LuckyHotKey, Callback> hotKey : hotKeys.entrySet())
-            if (hotKey.getKey().getKeyCodes().stream().allMatch(this::isPressed))
+            if (hotKey.getKey().getKeyCodes().stream().allMatch(this::isPressed) &&
+                    hotKey.getKey().getKeyCodes().size() == keyStates.keySet().stream().filter(this::isPressed).count())
                 hotKey.getValue().handleHotKey();
     }
 
