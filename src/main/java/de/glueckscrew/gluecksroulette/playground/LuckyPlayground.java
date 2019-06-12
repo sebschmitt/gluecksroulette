@@ -28,7 +28,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     public static final int WHEEL_RADIUS = 400;
     public static final double COLON_RADIUS = 0.25d * WHEEL_RADIUS;
 
-    private static final long MIN_TICK_DURATION = TimeUnit.MILLISECONDS.toNanos(14);
+    private static final long MIN_TICK_DURATION = TimeUnit.MILLISECONDS.toNanos(9);
     private static final int CAMERA_DEFAULT_X = -WHEEL_RADIUS;
     private static final int CAMERA_DEFAULT_Y = 150;
     private static final int CAMERA_DEFAULT_Z = 0;
@@ -103,7 +103,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
 
         physics = LuckyPhysics.getInstance();
         physics.setWheel(wheel);
-        physics.setLuckyBall(ball);
+        physics.setBall(ball);
         physics.setFrame(frame);
         physics.setListener(this);
 
