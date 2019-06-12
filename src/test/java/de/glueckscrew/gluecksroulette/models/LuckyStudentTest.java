@@ -78,6 +78,19 @@ public class LuckyStudentTest {
     }
 
     @Test
+    public void testLeadingAndTrailingSpaces() {
+        // given
+        LuckyStudent expected = new LuckyStudent("Bob", 1.0);
+        String data = " Bob  ,      1.0  ";
+
+        // when
+        LuckyStudent actual = LuckyStudent.deserialize(data);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testDeserializePrecisionOne() {
         // given
         LuckyStudent expected = new LuckyStudent("Bob", 1.0);
@@ -98,6 +111,58 @@ public class LuckyStudentTest {
 
         // when
         LuckyStudent actual = LuckyStudent.deserialize(data);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testNotTooLongNameWithOneSpace() {
+        // given
+        LuckyStudent student = new LuckyStudent("Joe Muller");
+        String expected = "J. Muller";
+
+        // when
+        String actual = student.getShortName();
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testTooLongNameWithOneSpace() {
+        // given
+        LuckyStudent student = new LuckyStudent("Davenport Longbottom");
+        String expected = "D. Longbottom";
+
+        // when
+        String actual = student.getShortName();
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testTooLongNameWithMoreThanOneSpace() {
+        // given
+        LuckyStudent student = new LuckyStudent("Julian-Jack Christopher Evans");
+        String expected = "J.-J. C. Evans";
+
+        // when
+        String actual = student.getShortName();
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testTooLongNameWithoutSpaces() {
+        // given
+        LuckyStudent student = new LuckyStudent("Superlongreallyreallyextensivelongname");
+        String expected = "Superlongreallyreallyextensivelongname";
+
+        // when
+        String actual = student.getShortName();
 
         // then
         assertEquals(expected, actual);

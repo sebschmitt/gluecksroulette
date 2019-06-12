@@ -52,6 +52,7 @@ public class LuckyStudent implements Cloneable {
             return null;
         }
 
+        String name = studentData[0].trim();
         double weight = 1.0;
 
         try {
@@ -65,7 +66,7 @@ public class LuckyStudent implements Cloneable {
             LOGGER.log(Level.FINER, "No value for weight found. Use default value 1.0");
         }
 
-        return new LuckyStudent(studentData[0], weight);
+        return new LuckyStudent(name, weight);
     }
 
     @Override
