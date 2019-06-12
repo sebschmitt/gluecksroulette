@@ -4,20 +4,16 @@ import de.glueckscrew.gluecksroulette.config.LuckyConfig;
 import de.glueckscrew.gluecksroulette.models.LuckyCourse;
 import de.glueckscrew.gluecksroulette.models.LuckyStudent;
 import de.glueckscrew.gluecksroulette.physics.LuckyPhysics;
-import de.glueckscrew.gluecksroulette.physics.LuckyPhysicsListener;
 import javafx.animation.AnimationTimer;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Rotate;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Sebastian Schmitt, Dominique Lasserre
@@ -102,10 +98,19 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
 
 
         LuckyFrame frame = new LuckyFrame(WHEEL_RADIUS);
+        LuckyFrame frame = LuckyFrame.getInstance();
+        frame.setInnerRadius(WHEEL_RADIUS);
+        frame.setTranslateY(WHEEL_DEFAULT_Y - frame.getHeight() * .5);
         PhongMaterial frameMat = new PhongMaterial(LuckyStudentSegment.RED);
         frameMat.setSpecularColor(Color.WHITE);
         frame.setMaterial(frameMat);
-        //wheel.getChildren().add(frame);
+
+        physics = LuckyPhysics.getInstance();
+        physics.setWheel(wheel);
+        physics.setBall(ball);
+        physics.setFrame(frame);
+
+        rootGroup.getChildren().add(frame);
 
         LuckyCone cone = new LuckyCone(COLON_RADIUS);
         PhongMaterial coneMat = new PhongMaterial(LuckyStudentSegment.RED);
