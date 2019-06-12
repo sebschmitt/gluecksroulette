@@ -13,13 +13,16 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Sebastian Schmitt
  */
 public class LuckyPlayground extends SubScene {
     public static final int WHEEL_RADIUS = 400;
+    public static final double COLON_RADIUS = 0.25d * WHEEL_RADIUS;
 
+    private static final long MIN_TICK_DURATION = TimeUnit.MILLISECONDS.toNanos(14);
     private static final int CAMERA_DEFAULT_X = -WHEEL_RADIUS;
     private static final int CAMERA_DEFAULT_Y = 150;
     private static final int CAMERA_DEFAULT_Z = 0;
@@ -88,17 +91,18 @@ public class LuckyPlayground extends SubScene {
         physics.setLuckyBall(ball);
 
 
-        LuckyFrame cone = new LuckyFrame(WHEEL_RADIUS);
-        PhongMaterial mat = new PhongMaterial(Color.RED);
-        mat.setSpecularColor(Color.WHITE);
-        cone.setMaterial(mat);
+        LuckyFrame frame = new LuckyFrame(WHEEL_RADIUS);
+        PhongMaterial frameMat = new PhongMaterial(LuckyStudentSegment.RED);
+        frameMat.setSpecularColor(Color.WHITE);
+        frame.setMaterial(frameMat);
 
+        wheel.getChildren().add(frame);
+
+        LuckyCone cone = new LuckyCone(COLON_RADIUS);
+        PhongMaterial coneMat = new PhongMaterial(LuckyStudentSegment.RED);
+        coneMat.setSpecularColor(Color.WHITE);
+        cone.setMaterial(coneMat);
         wheel.getChildren().add(cone);
-
-        LuckyCone center = new LuckyCone(wheel.getColonRadius());
-        center.setMaterial(mat);
-
-        wheel.getChildren().add(center);
 
         setCurrentCourse(DUMMY_COURSE);
     }
@@ -129,7 +133,7 @@ public class LuckyPlayground extends SubScene {
 
             @Override
             public void handle(long now) {
-                if (now - lastUpdate < 14_000_000) return;
+                if (now - lastUpdate < MIN_TICK_DURATION) return;
 
                 physics.tick();
                 lastUpdate = now;

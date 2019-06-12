@@ -36,6 +36,8 @@ import java.util.logging.Logger;
 public class LuckyControl extends Application {
     private static final Logger logger = Logger.getLogger(LuckyControl.class.getSimpleName());
 
+    private Scene mainScene;
+    private Stage primaryStage;
     private LuckyPlayground playground;
     private LuckyGUI gui;
     private LuckyConfig config;
@@ -44,18 +46,50 @@ public class LuckyControl extends Application {
     public void start(Stage primaryStage) {
         logger.info("start");
 
-        config = new LuckyConfig();
+        this.primaryStage = primaryStage;
 
+        config = new LuckyConfig();
         playground = new LuckyPlayground(config);
         gui = new LuckyGUI(playground, config);
 
-        Scene mainScene = new Scene(gui, config.getInt(LuckyConfig.Key.WINDOW_WIDTH),
+        mainScene = new Scene(gui, config.getInt(LuckyConfig.Key.WINDOW_WIDTH),
                 config.getInt(LuckyConfig.Key.WINDOW_HEIGHT));
         primaryStage.setScene(mainScene);
 
         playground.heightProperty().bind(mainScene.heightProperty());
         playground.widthProperty().bind(mainScene.widthProperty());
 
+        Camera camera = playground.getCamera();
+        mainScene.widthProperty().addListener((obs, oldVal, newVal) -> {
+            config.set(LuckyConfig.Key.WINDOW_WIDTH, newVal.intValue());
+            gui.update();
+
+            camera.setTranslateX(camera.getTranslateX() + (oldVal.doubleValue() - newVal.doubleValue()) / 2);
+            camera.setTranslateZ(camera.getTranslateZ() - (oldVal.doubleValue() - newVal.doubleValue()) / 4);
+        });
+
+        mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
+            config.set(LuckyConfig.Key.WINDOW_HEIGHT, newVal.intValue());
+            gui.update();
+
+            camera.setTranslateY(camera.getTranslateY() + (oldVal.doubleValue() - newVal.doubleValue()) / 2);
+            camera.setTranslateZ(camera.getTranslateZ() - (oldVal.doubleValue() - newVal.doubleValue()) / 4);
+        });
+
+
+        registerHotKeys();
+        primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+
+        config.save();
+        logger.info("Good Bye!");
+    }
+
+    private void registerHotKeys() {
         LuckyHotKeyHandler hotKeyHandler = new LuckyHotKeyHandler();
 
         mainScene.setOnKeyPressed(hotKeyHandler.keyPressed());
@@ -73,7 +107,6 @@ public class LuckyControl extends Application {
                             char[] windowText = new char[512];
                             User32.INSTANCE.GetWindowText(hWnd, windowText, 512);
                             String wText = Native.toString(windowText);
-                            wText = (wText.isEmpty()) ? "" : "; text: " + wText;
 
                             if (wText.toLowerCase().contains(config.getString(LuckyConfig.Key.FOCUS_CHANGE_WINDOW_NAME))) {
                                 User32.INSTANCE.SetForegroundWindow(hWnd);
@@ -81,6 +114,7 @@ public class LuckyControl extends Application {
                             }
                             return true;
                         }, null);
+
                     }
                 }, TimeUnit.SECONDS.toMillis(config.getInt(LuckyConfig.Key.FOCUS_CHANGE_TIMEOUT_SECONDS)));
             }
@@ -108,7 +142,7 @@ public class LuckyControl extends Application {
                     playground.setCurrentCourse(course);
                     primaryStage.setTitle(course.getIdentifier());
                 } catch (FileNotFoundException e) {
-                    logger.log(Level.SEVERE, String.format("FileNotFound Exception thrown. Relying on default values%n"), e);
+                    logger.log(Level.SEVERE, String.format("FileNotFoundException thrown. Relying on default values%n"), e);
                 } catch (SecurityException e) {
                     logger.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n",
                             file.getAbsolutePath()), e);
@@ -134,7 +168,6 @@ public class LuckyControl extends Application {
                 LuckyIO.write(file, playground.getCurrentCourse().serialize());
             }
 
-
             /*
             key released event is NOT called due to input blocking of showSaveDialog,
             need to manual reset
@@ -142,25 +175,7 @@ public class LuckyControl extends Application {
             hotKeyHandler.release(config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE));
         });
 
-
         Camera camera = playground.getCamera();
-        mainScene.widthProperty().addListener((obs, oldVal, newVal) -> {
-            config.set(LuckyConfig.Key.WINDOW_WIDTH, newVal.intValue());
-            gui.update();
-
-            camera.setTranslateX(camera.getTranslateX() + (oldVal.doubleValue() - newVal.doubleValue()) / 2);
-            camera.setTranslateZ(camera.getTranslateZ() - (oldVal.doubleValue() - newVal.doubleValue()) / 4);
-        });
-
-        mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
-            config.set(LuckyConfig.Key.WINDOW_HEIGHT, newVal.intValue());
-            gui.update();
-
-            camera.setTranslateY(camera.getTranslateY() + (oldVal.doubleValue() - newVal.doubleValue()) / 2);
-            camera.setTranslateZ(camera.getTranslateZ() - (oldVal.doubleValue() - newVal.doubleValue()) / 4);
-        });
-
-
         hotKeyHandler.register(new LuckyHotKey(KeyCode.UP, KeyCode.SHIFT), () -> camera.getTransforms().add(new Rotate(-1, Rotate.X_AXIS)));
         hotKeyHandler.register(new LuckyHotKey(KeyCode.DOWN, KeyCode.SHIFT), () -> camera.getTransforms().add(new Rotate(1, Rotate.X_AXIS)));
         hotKeyHandler.register(new LuckyHotKey(KeyCode.LEFT, KeyCode.SHIFT), () -> camera.getTransforms().add(new Rotate(1, Rotate.Y_AXIS)));
@@ -171,16 +186,6 @@ public class LuckyControl extends Application {
         hotKeyHandler.register(new LuckyHotKey(KeyCode.RIGHT), () -> camera.setTranslateX(camera.getTranslateX() + 10));
         hotKeyHandler.register(new LuckyHotKey(KeyCode.W), () -> camera.setTranslateZ(camera.getTranslateZ() + 10));
         hotKeyHandler.register(new LuckyHotKey(KeyCode.S), () -> camera.setTranslateZ(camera.getTranslateZ() - 10));
-
-        primaryStage.show();
-    }
-
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-
-        config.save();
-        logger.info("Good Bye!");
     }
 
     public static void main(String[] args) {

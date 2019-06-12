@@ -2,6 +2,7 @@ package de.glueckscrew.gluecksroulette.playground;
 
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
+import lombok.Getter;
 
 
 /**
@@ -11,15 +12,20 @@ import javafx.scene.shape.TriangleMesh;
  */
 public class LuckyFrame extends MeshView {
     private static final double ANGLE_IN_RADIAN = Math.toRadians(45);
-
     private static final double RESIZE_FACTOR = 1.25;
+
+    // "resolution" of our frame
+    private static final int MESH_DIVISIONS = 100;
+
+    @Getter
+    private double height;
 
 
     public LuckyFrame(double radius) {
         double largeRadius = RESIZE_FACTOR * radius;
 
         double diff = largeRadius - radius;
-        double height = Math.tan(ANGLE_IN_RADIAN) * diff;
+        height = Math.tan(ANGLE_IN_RADIAN) * diff;
 
         setMesh(createMesh((float) largeRadius, (float) radius, (float) height));
         setTranslateY(-height / 2);
@@ -27,16 +33,13 @@ public class LuckyFrame extends MeshView {
 
 
     private static TriangleMesh createMesh(float largeRadius, float radius, float height) {
-        // "resolution" of our cone
-        int divisions = 200;
-
-        final int nPonits = divisions * 2 + 2;
-        final int tcCount = (divisions + 1) * 4 + 1; // 2 cap tex
-        final int faceCount = divisions * 4;
+        final int nPonits = MESH_DIVISIONS * 2 + 2;
+        final int tcCount = (MESH_DIVISIONS + 1) * 4 + 1; // 2 cap tex
+        final int faceCount = MESH_DIVISIONS * 4;
 
         float textureDelta = 1.f / 256;
 
-        float dA = 1.f / divisions;
+        float dA = 1.f / MESH_DIVISIONS;
         height *= .5f;
 
         float[] points = new float[nPonits * 3];
@@ -46,7 +49,7 @@ public class LuckyFrame extends MeshView {
 
         int pPos = 0, tPos = 0;
 
-        for (int i = 0; i < divisions; ++i) {
+        for (int i = 0; i < MESH_DIVISIONS; ++i) {
             // angle in radian
             double a = dA * i * 2 * Math.PI;
 
@@ -64,7 +67,7 @@ public class LuckyFrame extends MeshView {
         tPoints[tPos + 1] = 1 - textureDelta;
         tPos += 2;
 
-        for (int i = 0; i < divisions; ++i) {
+        for (int i = 0; i < MESH_DIVISIONS; ++i) {
             // angle in radian
             double a = dA * i * 2 * Math.PI;
             points[pPos] = (float) (Math.sin(a) * radius);
@@ -91,8 +94,8 @@ public class LuckyFrame extends MeshView {
 
         // add cap central points
         // bottom cap
-        for (int i = 0; i <= divisions; ++i) {
-            double a = (i < divisions) ? (dA * i * 2) * Math.PI : 0;
+        for (int i = 0; i <= MESH_DIVISIONS; ++i) {
+            double a = (i < MESH_DIVISIONS) ? (dA * i * 2) * Math.PI : 0;
             tPoints[tPos] = (float) (Math.sin(a) * 0.5f) + 0.5f;
             tPoints[tPos + 1] = (float) (Math.cos(a) * 0.5f) + 0.5f;
             tPos += 2;
@@ -101,25 +104,25 @@ public class LuckyFrame extends MeshView {
         int fIndex = 0;
 
         // build body faces
-        for (int p0 = 0; p0 < divisions; ++p0) {
+        for (int p0 = 0; p0 < MESH_DIVISIONS; ++p0) {
             int p1 = p0 + 1;
-            int p2 = p0 + divisions;
-            int p3 = p1 + divisions;
+            int p2 = p0 + MESH_DIVISIONS;
+            int p3 = p1 + MESH_DIVISIONS;
 
             // add p0, p1, p2
             faces[fIndex] = p0;
             faces[fIndex + 1] = p0;
             faces[fIndex + 2] = p2;
             faces[fIndex + 3] = p2 + 1;
-            faces[fIndex + 4] = p1 == divisions ? 0 : p1;
+            faces[fIndex + 4] = p1 == MESH_DIVISIONS ? 0 : p1;
             faces[fIndex + 5] = p1;
             fIndex += 6;
 
             // add p3, p2, p1
             // *faces++ = SmFace(p3,p1,p2, p3,p1,p2, 1);
-            faces[fIndex] = p3 % divisions == 0 ? p3 - divisions : p3;
+            faces[fIndex] = p3 % MESH_DIVISIONS == 0 ? p3 - MESH_DIVISIONS : p3;
             faces[fIndex + 1] = p3 + 1;
-            faces[fIndex + 2] = p1 == divisions ? 0 : p1;
+            faces[fIndex + 2] = p1 == MESH_DIVISIONS ? 0 : p1;
             faces[fIndex + 3] = p1;
             faces[fIndex + 4] = p2;
             faces[fIndex + 5] = p2 + 1;
@@ -127,10 +130,10 @@ public class LuckyFrame extends MeshView {
 
         }
 
-        for (int i = 0; i < divisions * 2; ++i) {
+        for (int i = 0; i < MESH_DIVISIONS * 2; ++i) {
             smoothing[i] = 1;
         }
-        for (int i = divisions * 2; i < divisions * 4; ++i) {
+        for (int i = MESH_DIVISIONS * 2; i < MESH_DIVISIONS * 4; ++i) {
             smoothing[i] = 2;
         }
 
