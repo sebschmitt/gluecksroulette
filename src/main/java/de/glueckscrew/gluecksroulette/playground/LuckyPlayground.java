@@ -123,6 +123,11 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         setCurrentCourse(DUMMY_COURSE);
     }
 
+    public LuckyStudent getSelectedStudent() {
+        if (lastChangedSegment == null) return null;
+        return lastChangedSegment.getLuckyStudent();
+    }
+
     @Override
     public void onBallStopped() {
         lastChangedSegment = getSegmentWithBall();

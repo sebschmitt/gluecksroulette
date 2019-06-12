@@ -2,11 +2,15 @@ package de.glueckscrew.gluecksroulette.gui;
 
 import com.sun.javafx.PlatformUtil;
 import de.glueckscrew.gluecksroulette.config.LuckyConfig;
+import de.glueckscrew.gluecksroulette.models.LuckyStudent;
 import de.glueckscrew.gluecksroulette.util.LuckyTextUtil;
+import javafx.animation.FadeTransition;
 import javafx.scene.Group;
 import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +23,9 @@ import java.util.logging.Logger;
  */
 public class LuckyGUI extends Group {
     private static final Logger LOGGER = Logger.getLogger(LuckyGUI.class.getSimpleName());
+
+    private static final Duration FADE_OUT_DURATION = Duration.seconds(2);
+    private static final Duration FADE_IN_DURATION = Duration.seconds(0.5);
 
     /**
      * Hint Block offset (left and bottom)
@@ -55,9 +62,19 @@ public class LuckyGUI extends Group {
     private Text currentModeHint;
 
     /**
+     * shows the selected student
+     */
+    private Text selectedStudent;
+
+    /**
      * Instance of the config
      */
     private LuckyConfig config;
+
+    /**
+     * indicated whether selected student changed
+     */
+    private boolean selectedStudentChanged;
 
 
     public LuckyGUI(SubScene playground, LuckyConfig config) {
@@ -74,6 +91,11 @@ public class LuckyGUI extends Group {
             focusChangeActiveHint.setFill(Color.GREEN);
         else
             focusChangeActiveHint.setFill(Color.RED);
+
+        selectedStudent = new Text();
+        selectedStudent.setFont(new Font(50));
+        selectedStudent.setFill(Color.WHITE);
+        selectedStudent.setOpacity(0d);
 
         /*
         Hint for current mode
@@ -124,6 +146,7 @@ public class LuckyGUI extends Group {
         getChildren().add(currentModeHint);
         if (PlatformUtil.isWindows())
             getChildren().add(focusChangeActiveHint);
+        getChildren().add(selectedStudent);
         getChildren().addAll(toggleableHints);
 
         update();
@@ -148,6 +171,31 @@ public class LuckyGUI extends Group {
 
         focusChangeActiveHint.xProperty().set(config.getInt(LuckyConfig.Key.WINDOW_WIDTH) - LuckyTextUtil.getTextLength(focusChangeActiveHint) - HINT_BLOCK_OFFSET);
         focusChangeActiveHint.yProperty().set(2 * HINT_TEXT_OFFSET);
+    }
+
+    public void showSelectedStudent(LuckyStudent student) {
+        selectedStudentChanged = true;
+        selectedStudent.setText(student.getName());
+        selectedStudent.setOpacity(1d);
+
+
+        FadeTransition fadeInTransition = new FadeTransition(FADE_IN_DURATION, selectedStudent);
+        fadeInTransition.setFromValue(0d);
+        fadeInTransition.setToValue(1d);
+        fadeInTransition.play();
+
+        selectedStudent.xProperty().set((config.getInt(LuckyConfig.Key.WINDOW_WIDTH) - LuckyTextUtil.getTextLength(selectedStudent)) / 2d);
+        selectedStudent.yProperty().set(config.getInt(LuckyConfig.Key.WINDOW_HEIGHT) / 5);
+    }
+
+    public void fadeOutSelectedStudent() {
+        if (!selectedStudentChanged) return;
+        selectedStudentChanged = false;
+
+        FadeTransition fadeOutTransition = new FadeTransition(FADE_OUT_DURATION, selectedStudent);
+        fadeOutTransition.setFromValue(1d);
+        fadeOutTransition.setToValue(0d);
+        fadeOutTransition.play();
     }
 
     public void updateMode() {
