@@ -12,4 +12,8 @@ public class LuckyTextUtil {
     public static double getTextLength(Text text) {
         return Toolkit.getToolkit().getFontLoader().computeStringWidth(text.getText(), text.getFont());
     }
+
+    public static double getTextHeight(Text text) {
+        return Toolkit.getToolkit().getFontLoader().getFontMetrics(text.getFont()).getLineHeight();
+    }
 }
