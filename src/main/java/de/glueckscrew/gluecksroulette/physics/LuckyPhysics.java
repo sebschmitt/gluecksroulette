@@ -106,6 +106,11 @@ public class LuckyPhysics {
                 ball.getVelocity().x = 0;
                 ball.getVelocity().y = 0;
                 ball.getVelocity().z = 0;
+
+                if (this.spinning) {
+                    this.spinning = false;
+                    if (listener != null) listener.onBallStopped();
+                }
             }
 
 
@@ -134,6 +139,7 @@ public class LuckyPhysics {
                             if (listener != null) listener.onBallStopped();
                         }
                     }
+
 
             //apply gravity
             ball.getVelocity().y += GRAVITY;
