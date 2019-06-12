@@ -13,8 +13,7 @@ import java.util.logging.Logger;
  */
 @Data
 public class LuckyCourse implements Cloneable {
-
-    private static Logger logger = Logger.getLogger(LuckyCourse.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyCourse.class.getSimpleName());
 
     private static final String SERIALIZE_DELIMITER = "\n";
 
@@ -66,7 +65,7 @@ public class LuckyCourse implements Cloneable {
         if (countStudentWeightLow == students.size()) {
             normalizeWeights();
         }
-        logger.log(Level.INFO, "selected student: " + student.getName());
+        LOGGER.log(Level.INFO, "selected student: " + student.getName());
     }
 
     private void normalizeWeights() {

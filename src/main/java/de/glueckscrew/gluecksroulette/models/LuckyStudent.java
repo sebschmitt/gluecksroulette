@@ -13,8 +13,7 @@ import java.util.logging.Logger;
  */
 @Data
 public class LuckyStudent implements Cloneable {
-
-    private static Logger logger = Logger.getLogger(LuckyStudent.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyStudent.class.getSimpleName());
 
     private static final String SERIALIZE_DELIMITER = ",";
 
@@ -47,7 +46,7 @@ public class LuckyStudent implements Cloneable {
         String[] studentData = data.split(SERIALIZE_DELIMITER);
 
         if (studentData.length < 1 || studentData.length > 2) {
-            logger.log(Level.SEVERE, String.format(
+            LOGGER.log(Level.SEVERE, String.format(
                 "Student data doesn't match the following pattern: name[,weight]%nData: %s",
                 data));
             return null;
@@ -58,12 +57,12 @@ public class LuckyStudent implements Cloneable {
         try {
             weight = Double.parseDouble(studentData[1]);
         } catch (NumberFormatException nfe) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 String.format("Found an invalid value for weight. Full Trace Back:%n"),
                 nfe);
             return null;
         } catch (IndexOutOfBoundsException ioobe) {
-            logger.log(Level.FINER, "No value for weight found. Use default value 1.0");
+            LOGGER.log(Level.FINER, "No value for weight found. Use default value 1.0");
         }
 
         return new LuckyStudent(studentData[0], weight);

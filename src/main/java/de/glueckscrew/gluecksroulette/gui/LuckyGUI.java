@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author Sebastian Schmitt
  */
 public class LuckyGUI extends Group {
-    private static Logger logger = Logger.getLogger(LuckyGUI.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyGUI.class.getSimpleName());
 
     /**
      * Hint Block offset (left and bottom)

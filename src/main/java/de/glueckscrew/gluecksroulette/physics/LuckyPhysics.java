@@ -5,7 +5,6 @@ import de.glueckscrew.gluecksroulette.playground.LuckyBall;
 import de.glueckscrew.gluecksroulette.playground.LuckyFrame;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import de.glueckscrew.gluecksroulette.playground.LuckyWheel;
-import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +21,7 @@ import java.util.logging.Logger;
  */
 
 public class LuckyPhysics {
-    private static Logger logger = Logger.getLogger(LuckyPhysics.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyPhysics.class.getSimpleName());
     private static LuckyPhysics instance;
 
     private final static double COLLISION_REDUCTION = .98;
@@ -93,7 +92,7 @@ public class LuckyPhysics {
                             Rotate rotate = (Rotate) wheel.getTransforms().get(0);
                             rotate.setAngle((rotate.getAngle() + wheel.getRotationSpeed()) % 360);
                         } catch (Exception e) {
-                            logger.log(Level.SEVERE, "Could not find/apply a transform in wheel, skipping! Full trace back: %n", e);
+                            LOGGER.log(Level.SEVERE, "Could not find/apply a transform in wheel, skipping! Full trace back: %n", e);
                         }
                     } else {
                         wheel.setRotationSpeed(0);
@@ -149,20 +148,20 @@ public class LuckyPhysics {
 
                 } else {
                     if (luckyBall == null)
-                        logger.log(Level.SEVERE, "No luckyBall found, skipping!");
+                        LOGGER.log(Level.SEVERE, "No luckyBall found, skipping!");
 
                     if (wheel == null)
-                        logger.log(Level.SEVERE, "No luckyWheel found, skipping!");
+                        LOGGER.log(Level.SEVERE, "No luckyWheel found, skipping!");
 
                     if (wheel.getChildren().isEmpty())
-                        logger.log(Level.SEVERE, "No elements in the luckyWheel found, skipping!");
+                        LOGGER.log(Level.SEVERE, "No elements in the luckyWheel found, skipping!");
 
                     return 1;
                     // TODO frame-check
                 }
             }
         } else {
-            logger.log(Level.WARNING, "LuckyPhysics asked to tick 0 units, skipping!");
+            LOGGER.log(Level.WARNING, "LuckyPhysics asked to tick 0 units, skipping!");
             return 1;
         }
         return 0;
@@ -175,14 +174,14 @@ public class LuckyPhysics {
         luckyBall.setTranslateZ(LuckyPlayground.WHEEL_RADIUS * 0.5);
         luckyBall.setTranslateY(400);
         wheel.setRotationSpeed(wheel.getRotationSpeed() + BASE_WHEEL_SPEED);
-        logger.log(Level.INFO, "Spin started!");
+        LOGGER.log(Level.INFO, "Spin started!");
         this.spinning = true;
         return 0;
     }
 
     public int reset() {
         //TODO: reset
-        logger.log(Level.INFO, "LuckyBall reset!");
+        LOGGER.log(Level.INFO, "LuckyBall reset!");
         return 0;
     }
 

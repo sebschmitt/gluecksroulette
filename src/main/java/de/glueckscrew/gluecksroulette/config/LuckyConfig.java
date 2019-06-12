@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * @author Sebastian Schmitt
  */
 public class LuckyConfig {
-    private static final Logger logger = Logger.getLogger(LuckyConfig.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyConfig.class.getSimpleName());
 
     private static final String KEY_VALUE_SEPERATOR = "=";
 
@@ -44,10 +44,10 @@ public class LuckyConfig {
         try {
             fileContent = LuckyIO.read(new FileInputStream(configFile));
         } catch (FileNotFoundException e) {
-            logger.log(Level.SEVERE, String.format("FileNotFound Exception thrown. Relying on default values%n"), e);
+            LOGGER.log(Level.SEVERE, String.format("FileNotFound Exception thrown. Relying on default values%n"), e);
             return;
         } catch (SecurityException e) {
-            logger.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n", configFile.getAbsolutePath()), e);
+            LOGGER.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n", configFile.getAbsolutePath()), e);
             return;
         }
 
@@ -58,7 +58,7 @@ public class LuckyConfig {
             String[] parts = line.split(KEY_VALUE_SEPERATOR);
 
             if (parts.length != 2) {
-                logger.warning(String.format("Config line:%n%s%n is invalid. Ignoring", line));
+                LOGGER.warning(String.format("Config line:%n%s%n is invalid. Ignoring", line));
                 continue;
             }
 
@@ -68,7 +68,7 @@ public class LuckyConfig {
             try {
                 key = Key.valueOf(uppercaseKey);
             } catch (IllegalArgumentException e) {
-                logger.warning(String.format("Config key \"%s\" is invalid. Ignoring", uppercaseKey));
+                LOGGER.warning(String.format("Config key \"%s\" is invalid. Ignoring", uppercaseKey));
                 continue;
             }
 
@@ -84,7 +84,7 @@ public class LuckyConfig {
                     value = Integer.parseInt(valueString);
 
                 } catch (NumberFormatException e) {
-                    logger.warning(String.format("Config value \"%s\" for key \"%s\" is not an integer. Ignoring",
+                    LOGGER.warning(String.format("Config value \"%s\" for key \"%s\" is not an integer. Ignoring",
                             valueString, key.toString()));
                     continue;
                 }
@@ -96,12 +96,12 @@ public class LuckyConfig {
 
 
             if (value == null) {
-                logger.warning(String.format("Value \"%s\" has invalid type. Ignoring", valueString));
+                LOGGER.warning(String.format("Value \"%s\" has invalid type. Ignoring", valueString));
                 continue;
             }
 
             if (values.containsKey(key))
-                logger.warning(String.format("Value for key %s is already present, replacing.", key.toString()));
+                LOGGER.warning(String.format("Value for key %s is already present, replacing.", key.toString()));
 
             values.put(key, value);
         }
@@ -156,7 +156,7 @@ public class LuckyConfig {
     }
 
     public boolean save() {
-        logger.info("saving config");
+        LOGGER.info("saving config");
         StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<Key, Object> entry : values.entrySet()) {
