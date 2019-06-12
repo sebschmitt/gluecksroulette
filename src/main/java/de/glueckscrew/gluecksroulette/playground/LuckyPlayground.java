@@ -106,8 +106,6 @@ public class LuckyPlayground extends SubScene {
         wheel.getChildren().add(cone);
 
         setCurrentCourse(DUMMY_COURSE);
-
-        physics.spin();
     }
 
     public void setCurrentCourse(LuckyCourse currentCourse) {
