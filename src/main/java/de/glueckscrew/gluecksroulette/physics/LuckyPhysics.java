@@ -2,6 +2,7 @@ package de.glueckscrew.gluecksroulette.physics;
 
 import com.sun.javafx.geom.Vec3d;
 import de.glueckscrew.gluecksroulette.playground.LuckyBall;
+import de.glueckscrew.gluecksroulette.playground.LuckyFrame;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import de.glueckscrew.gluecksroulette.playground.LuckyWheel;
 import javafx.scene.Group;
@@ -33,7 +34,7 @@ public class LuckyPhysics {
     private final static double BASE_WHEEL_SPEED = 2;
 
     @Setter
-    private Group frame;
+    private LuckyFrame frame;
     @Setter
     private LuckyWheel wheel;
     @Setter
