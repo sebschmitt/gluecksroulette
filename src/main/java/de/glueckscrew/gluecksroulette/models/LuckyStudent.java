@@ -1,6 +1,7 @@
 package de.glueckscrew.gluecksroulette.models;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.Locale;
 import java.util.logging.Level;
@@ -16,7 +17,10 @@ public class LuckyStudent implements Cloneable {
 
     private static final String SERIALIZE_DELIMITER = ",";
 
+    @Getter
     private String name;
+    @Getter
+    private String shortName;
     private double weight;
 
     private LuckyStudent() {
@@ -28,7 +32,7 @@ public class LuckyStudent implements Cloneable {
     }
 
     public LuckyStudent(String name, double weight) {
-        this.name = name;
+        setName(name);
         this.weight = weight;
     }
 
@@ -65,5 +69,16 @@ public class LuckyStudent implements Cloneable {
     @Override
     public LuckyStudent clone() {
         return new LuckyStudent(name, weight);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+
+        int lastSpace = name.lastIndexOf(" ");
+        if (lastSpace > 0) {
+            this.shortName = name.substring(0, lastSpace).replaceAll("([A-Za-z])[A-Za-z]*", "$1.") + name.substring(lastSpace);
+        } else {
+            this.shortName = name;
+        }
     }
 }

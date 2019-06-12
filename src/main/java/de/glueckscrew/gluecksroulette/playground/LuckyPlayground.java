@@ -33,6 +33,10 @@ public class LuckyPlayground extends SubScene {
         add(new LuckyStudent("lucky roulette"));
         add(new LuckyStudent("lucky roulette"));
         add(new LuckyStudent("lucky roulette"));
+        add(new LuckyStudent("Joe Muller"));
+        add(new LuckyStudent("Davenport Longbottom"));
+        add(new LuckyStudent("Julian-Jack Christopher Evans"));
+        add(new LuckyStudent("Superlongreallyreallyextensivelongname"));
     }});
 
     private LuckyPhysics physics;

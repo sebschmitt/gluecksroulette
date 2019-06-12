@@ -27,6 +27,7 @@ public class LuckyStudentSegment extends Group {
     private static final int FONT_SIZE = 37;
     private static final double TEXT_Y = -1.5;
     private static final double REDUCTION_FACTOR = 0.9;
+    private static final double MAX_TEXT_WIDTH = (LuckyPlayground.WHEEL_RADIUS - LuckyPlayground.COLON_RADIUS) * REDUCTION_FACTOR;
 
     // Resolution of mesh
     private static final int MESH_DIVISIONS = 100;
@@ -69,14 +70,25 @@ public class LuckyStudentSegment extends Group {
 
     public void update() {
         text.setText(luckyStudent.getName());
+        double textWidth = LuckyTextUtil.getTextLength(text);
+        if (textWidth > MAX_TEXT_WIDTH) {
+            text.setText(luckyStudent.getShortName());
+            textWidth = LuckyTextUtil.getTextLength(text);
+            // display at least first letter + ... (= 4 letters)
+            while (text.getText().length() > 4 && textWidth > MAX_TEXT_WIDTH) {
+                text.setText(text.getText().substring(0, text.getText().length() - 4) + "...");
+                textWidth = LuckyTextUtil.getTextLength(text);
+            }
+        }
 
-        Pair<Double, Double> position = calculatePosition(offset + step,
-                REDUCTION_FACTOR - LuckyTextUtil.getTextLength(text) / (double) LuckyPlayground.WHEEL_RADIUS);
+        Pair<Double, Double> position = calculatePosition(offset + step/2,
+                LuckyPlayground.COLON_RADIUS + (MAX_TEXT_WIDTH - textWidth) / 2,
+                LuckyTextUtil.getTextHeight(text) / 4);
         text.setTranslateX(position.getKey());
         text.setTranslateZ(position.getValue());
 
         text.getTransforms().clear();
-        text.getTransforms().add(new Rotate((offset + step) * 360, Rotate.Y_AXIS));
+        text.getTransforms().add(new Rotate((offset + step/2) * 360, Rotate.Y_AXIS));
         text.getTransforms().add(new Rotate(-90, Rotate.X_AXIS));
 
 
@@ -91,10 +103,10 @@ public class LuckyStudentSegment extends Group {
     }
 
 
-    private static Pair<Double, Double> calculatePosition(double step, double length) {
-        double t = ((-step) * 360) / 180 * Math.PI;
-        double x = Math.cos(t) * LuckyPlayground.WHEEL_RADIUS * length;
-        double y = Math.sin(t) * LuckyPlayground.WHEEL_RADIUS * length;
+    private static Pair<Double, Double> calculatePosition(double step, double length, double height) {
+        double t = ((-step) * 360) / 180 * Math.PI - Math.asin(height/length);
+        double x = Math.cos(t) * length;
+        double y = Math.sin(t) * length;
 
         return new Pair<>(x, y);
     }
