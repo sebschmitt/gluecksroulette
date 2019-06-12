@@ -54,8 +54,8 @@ public class LuckyHotKeyHandler {
         };
     }
 
-    public void release(LuckyHotKey hotKey) {
-        hotKey.getKeyCodes().forEach(keyCode  -> keyStates.put(keyCode, false));
+    public void releaseAll() {
+        keyStates.clear();
     }
 
     public void register(LuckyHotKey hotKey, Callback callback) {

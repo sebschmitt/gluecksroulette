@@ -152,14 +152,6 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
                             file.getAbsolutePath()), e);
                 }
             }
-
-
-            /*
-            key released event is NOT called due to input blocking of showOpenDialog,
-            need to manual reset
-             */
-            hotKeyHandler.release(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE));
-
         });
 
         // TODO: move to auto save, need to remember current course file
@@ -171,12 +163,11 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
             if (file != null) {
                 LuckyIO.write(file, playground.getCurrentCourse().serialize());
             }
+        });
 
-            /*
-            key released event is NOT called due to input blocking of showSaveDialog,
-            need to manual reset
-             */
-            hotKeyHandler.release(config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE));
+
+        primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) hotKeyHandler.releaseAll();
         });
 
         Camera camera = playground.getCamera();
