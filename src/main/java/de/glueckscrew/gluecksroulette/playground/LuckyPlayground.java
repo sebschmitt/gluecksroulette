@@ -141,6 +141,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         LuckyStudent student = lastChangedSegment.getLuckyStudent();
         lastProbabilityChange = currentCourse.reduce(student);
         resizeSegments();
+        turnSegmentToBall(lastChangedSegment);
     }
 
     public void enlargeSelected() {
@@ -150,6 +151,16 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         LuckyStudent student = lastChangedSegment.getLuckyStudent();
         lastProbabilityChange = currentCourse.enlarge(student);
         resizeSegments();
+    }
+
+    public void turnSegmentToBall(LuckyStudentSegment segment) {
+        double startDeg = (segment.getOffset()) * 360;
+        double endDeg = (segment.getOffset() + segment.getStep()) * 360;
+
+        Rotate rotate = (Rotate) wheel.getTransforms().get(0);
+
+        // set angle required to turn center of segment to where the ball is
+        rotate.setAngle((360 + checkBallPosition() - (startDeg + endDeg) / 2) % 360);
     }
 
     private LuckyStudentSegment getSegmentWithBall() {
