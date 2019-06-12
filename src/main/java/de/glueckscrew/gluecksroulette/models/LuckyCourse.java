@@ -53,9 +53,9 @@ public class LuckyCourse implements Cloneable {
 
     public void select(LuckyStudent student) {
         // set new weight p for selected student to p/n, where n is size of course
-        double oldWeight = student.getProbability();
+        double oldWeight = student.getWeight();
         double newWeight = oldWeight / students.size();
-        student.setProbability(newWeight);
+        student.setWeight(newWeight);
         if (oldWeight >= 1 && newWeight < 1) {
             ++countStudentWeightLow;
         }
@@ -72,7 +72,7 @@ public class LuckyCourse implements Cloneable {
     private void normalizeWeights() {
         double factor = 1/studentWeightLowest;
         for (LuckyStudent student : students) {
-            student.setProbability(student.getProbability()*factor);
+            student.setWeight(student.getWeight()*factor);
         }
         countStudentWeightLow = 0;
     }
@@ -82,7 +82,7 @@ public class LuckyCourse implements Cloneable {
         studentWeightLowest = 1;
 
         for (LuckyStudent student : students) {
-            double weight = student.getProbability();
+            double weight = student.getWeight();
             if (weight < 1) {
                 ++countStudentWeightLow;
                 if (studentWeightLowest > weight) {
@@ -99,7 +99,7 @@ public class LuckyCourse implements Cloneable {
         countStudentWeightLow = 0;
         studentWeightLowest = 1;
 
-        students.forEach(student -> student.setProbability(1));
+        students.forEach(student -> student.setWeight(1));
     }
 
     @Override
