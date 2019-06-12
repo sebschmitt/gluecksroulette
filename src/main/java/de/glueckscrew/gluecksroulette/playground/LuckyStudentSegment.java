@@ -30,7 +30,7 @@ public class LuckyStudentSegment extends Group {
     private static final double MAX_TEXT_WIDTH = (LuckyPlayground.WHEEL_RADIUS - LuckyPlayground.COLON_RADIUS) * REDUCTION_FACTOR;
 
     // Resolution of mesh
-    private static final int MESH_DIVISIONS = 100;
+    private static final int MESH_DIVISIONS = 1000;
     private static final float MESH_HEIGHT = 1f * 0.5f;
 
 

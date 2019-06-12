@@ -24,6 +24,9 @@ import java.util.logging.Logger;
 public class LuckyGUI extends Group {
     private static final Logger LOGGER = Logger.getLogger(LuckyGUI.class.getSimpleName());
 
+    private static final int HINT_TEXT_FONT_SIZE = 20;
+    private static final int SELECTED_STUDENT_FONT_SIZE = 50;
+
     private static final Duration FADE_OUT_DURATION = Duration.seconds(2);
     private static final Duration FADE_IN_DURATION = Duration.seconds(0.5);
 
@@ -35,7 +38,7 @@ public class LuckyGUI extends Group {
     /**
      * Hint Text offset
      */
-    private static final int HINT_TEXT_OFFSET = 12;
+    private static final int HINT_TEXT_OFFSET = (int) Math.floor(0.9 * HINT_TEXT_FONT_SIZE);
 
     /**
      * List of toggleable hints
@@ -85,15 +88,17 @@ public class LuckyGUI extends Group {
         toggleHint = new Text(String.format("Press %s to toggle hints!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP).toPrettyString()));
         toggleHint.setFill(Color.WHITE);
+        toggleHint.setFont(new Font(HINT_TEXT_FONT_SIZE));
 
         focusChangeActiveHint = new Text("Focus change");
+        focusChangeActiveHint.setFont(new Font(HINT_TEXT_FONT_SIZE));
         if (config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE))
             focusChangeActiveHint.setFill(Color.GREEN);
         else
             focusChangeActiveHint.setFill(Color.RED);
 
         selectedStudent = new Text();
-        selectedStudent.setFont(new Font(50));
+        selectedStudent.setFont(new Font(SELECTED_STUDENT_FONT_SIZE));
         selectedStudent.setFill(Color.WHITE);
         selectedStudent.setOpacity(0d);
 
@@ -102,6 +107,7 @@ public class LuckyGUI extends Group {
          */
         currentModeHint = new Text(config.getMode(LuckyConfig.Key.MODE).toString());
         currentModeHint.setFill(Color.WHITE);
+        currentModeHint.setFont(new Font(HINT_TEXT_FONT_SIZE));
 
         /*
         Hint how to spin the roulette
@@ -131,6 +137,12 @@ public class LuckyGUI extends Group {
          */
         toggleableHints.add(createToggleableHint(String.format("Press %s to save course!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE).toPrettyString())));
+
+        /*
+        Hint to toggle mode
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s to change mode!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_MODE).toPrettyString())));
 
         /*
         Hint for toggling focus change
@@ -176,8 +188,6 @@ public class LuckyGUI extends Group {
     public void showSelectedStudent(LuckyStudent student) {
         selectedStudentChanged = true;
         selectedStudent.setText(student.getName());
-        selectedStudent.setOpacity(1d);
-
 
         FadeTransition fadeInTransition = new FadeTransition(FADE_IN_DURATION, selectedStudent);
         fadeInTransition.setFromValue(0d);
@@ -220,6 +230,7 @@ public class LuckyGUI extends Group {
 
     private Text createToggleableHint(String text) {
         Text hint = new Text(text);
+        hint.setFont(new Font(HINT_TEXT_FONT_SIZE));
         hint.setFill(Color.WHITE);
         hint.setVisible(false);
 
