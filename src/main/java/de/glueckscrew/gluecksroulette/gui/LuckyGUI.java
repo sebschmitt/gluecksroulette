@@ -49,11 +49,11 @@ public class LuckyGUI extends Group {
      * Shows state of auto focus change
      */
     private Text focusChangeActiveHint;
-
     /**
-     * State of automatic focus change
+     * Shows current mode
      */
-    private boolean focusChangeActive = true;
+    private Text currentModeHint;
+
     /**
      * Instance of the config
      */
@@ -75,38 +75,43 @@ public class LuckyGUI extends Group {
         else
             focusChangeActiveHint.setFill(Color.RED);
 
+        /*
+        Hint for current mode
+         */
+        currentModeHint = new Text(config.getMode(LuckyConfig.Key.MODE).toString());
+        currentModeHint.setFill(Color.WHITE);
 
         /*
-         * Hint how to spin the roulette
+        Hint how to spin the roulette
          */
         toggleableHints.add(createToggleableHint(String.format("Press %s to spin the roulette!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN).toPrettyString())));
 
         /*
-         * Hint for soft reset
+        Hint for soft reset
          */
         toggleableHints.add(createToggleableHint(String.format("Press %s for soft reset!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET).toPrettyString())));
 
         /*
-         * Hint for hard reset
+        Hint for hard reset
          */
         toggleableHints.add(createToggleableHint(String.format("Press %s for hard reset!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET).toPrettyString())));
         /*
-         * Hint for open course file
+        Hint for open course file
          */
         toggleableHints.add(createToggleableHint(String.format("Press %s to open course!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE).toPrettyString())));
 
         /*
-         * Hint for saving course file
+        Hint for saving course file
          */
         toggleableHints.add(createToggleableHint(String.format("Press %s to save course!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE).toPrettyString())));
 
         /*
-         * Hint for toggling focus change
+        Hint for toggling focus change
          */
         if (PlatformUtil.isWindows())
             toggleableHints.add(createToggleableHint(String.format("Press %s to toggle focus change!",
@@ -116,6 +121,7 @@ public class LuckyGUI extends Group {
         getChildren().add(playground);
 
         getChildren().addAll(toggleHint);
+        getChildren().add(currentModeHint);
         if (PlatformUtil.isWindows())
             getChildren().add(focusChangeActiveHint);
         getChildren().addAll(toggleableHints);
@@ -137,21 +143,21 @@ public class LuckyGUI extends Group {
         toggleHint.xProperty().set(x);
         toggleHint.yProperty().set(y);
 
+        currentModeHint.xProperty().set(config.getInt(LuckyConfig.Key.WINDOW_WIDTH) - LuckyTextUtil.getTextLength(currentModeHint) - HINT_BLOCK_OFFSET);
+        currentModeHint.yProperty().set(HINT_TEXT_OFFSET);
+
         focusChangeActiveHint.xProperty().set(config.getInt(LuckyConfig.Key.WINDOW_WIDTH) - LuckyTextUtil.getTextLength(focusChangeActiveHint) - HINT_BLOCK_OFFSET);
-        focusChangeActiveHint.yProperty().set(HINT_TEXT_OFFSET);
+        focusChangeActiveHint.yProperty().set(2 * HINT_TEXT_OFFSET);
     }
 
-    /**
-     * Completly hides focus change hints because we are not on windows
-     */
-    public void disableFocusChange() {
-        focusChangeActiveHint.setVisible(false);
+    public void updateMode() {
+        currentModeHint.setText(config.getMode(LuckyConfig.Key.MODE).toString());
+        currentModeHint.xProperty().set(config.getInt(LuckyConfig.Key.WINDOW_WIDTH) - LuckyTextUtil.getTextLength(currentModeHint) - HINT_BLOCK_OFFSET);
+        currentModeHint.yProperty().set(HINT_TEXT_OFFSET);
     }
 
-    public void toggleFocusChange() {
-        focusChangeActive = !focusChangeActive;
-
-        if (focusChangeActive)
+    public void updateFocusChange() {
+        if (config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE))
             focusChangeActiveHint.setFill(Color.GREEN);
         else
             focusChangeActiveHint.setFill(Color.RED);

@@ -51,7 +51,25 @@ public class LuckyCourse implements Cloneable {
         return new LuckyCourse(identifier, new ArrayList<>(students));
     }
 
-    public void select(LuckyStudent student) {
+    public void enlarge(LuckyStudent student) {
+        // set new weight p for selected student to p/n, where n is size of course
+        double oldWeight = student.getWeight();
+        double newWeight = oldWeight + oldWeight / students.size();
+        student.setWeight(newWeight);
+        if (oldWeight >= 1 && newWeight < 1) {
+            ++countStudentWeightLow;
+        }
+        if (studentWeightLowest > newWeight) {
+            studentWeightLowest = newWeight;
+        }
+
+        if (countStudentWeightLow == students.size()) {
+            normalizeWeights();
+        }
+        logger.log(Level.INFO, "enlarged student: " + student.getName());
+    }
+
+    public void reduce(LuckyStudent student) {
         // set new weight p for selected student to p/n, where n is size of course
         double oldWeight = student.getWeight();
         double newWeight = oldWeight / students.size();
@@ -66,7 +84,7 @@ public class LuckyCourse implements Cloneable {
         if (countStudentWeightLow == students.size()) {
             normalizeWeights();
         }
-        logger.log(Level.INFO, "selected student: " + student.getName());
+        logger.log(Level.INFO, "reduced student: " + student.getName());
     }
 
     private void normalizeWeights() {
