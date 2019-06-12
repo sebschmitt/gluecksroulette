@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  * @author Sebastian Schmitt
  */
 public class LuckyControl extends Application implements LuckyPlaygroundListener {
-    private static final Logger logger = Logger.getLogger(LuckyControl.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyControl.class.getSimpleName());
 
     private Scene mainScene;
     private Stage primaryStage;
@@ -45,7 +45,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
     @Override
     public void start(Stage primaryStage) {
-        logger.info("start");
+        LOGGER.info("start");
 
         this.primaryStage = primaryStage;
 
@@ -88,7 +88,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         super.stop();
 
         config.save();
-        logger.info("Good Bye!");
+        LOGGER.info("Good Bye!");
     }
 
     private void registerHotKeys() {
@@ -122,9 +122,9 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
                     playground.setCurrentCourse(course);
                     primaryStage.setTitle(course.getIdentifier());
                 } catch (FileNotFoundException e) {
-                    logger.log(Level.SEVERE, String.format("FileNotFoundException thrown. Relying on default values%n"), e);
+                    LOGGER.log(Level.SEVERE, String.format("FileNotFoundException thrown. Relying on default values%n"), e);
                 } catch (SecurityException e) {
-                    logger.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n",
+                    LOGGER.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n",
                             file.getAbsolutePath()), e);
                 }
             }

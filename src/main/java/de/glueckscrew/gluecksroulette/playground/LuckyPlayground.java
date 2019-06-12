@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * @author Sebastian Schmitt, Dominique Lasserre
  */
 public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
-    private static Logger logger = Logger.getLogger(LuckyPlayground.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyPlayground.class.getSimpleName());
 
     public static final int WHEEL_RADIUS = 400;
     public static final double COLON_RADIUS = 0.25d * WHEEL_RADIUS;
@@ -152,7 +152,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
                 return segment;
             }
         }
-        logger.log(Level.SEVERE, "no segment containing the ball found, skipping!");
+        LOGGER.log(Level.SEVERE, "no segment containing the ball found, skipping!");
         return null;
     }
 

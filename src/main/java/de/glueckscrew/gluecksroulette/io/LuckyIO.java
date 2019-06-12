@@ -1,23 +1,17 @@
 package de.glueckscrew.gluecksroulette.io;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author Florian Dahlitz
  */
 public class LuckyIO {
-
-    private static Logger logger = Logger.getLogger(LuckyIO.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyIO.class.getSimpleName());
 
     private static final Charset ENCODING = UTF_8;
 
@@ -33,7 +27,7 @@ public class LuckyIO {
 
             return true;
         } catch (SecurityException | IOException e) {
-            logger.log(Level.SEVERE, String.format("We are unable to create/write file %s. See full stacktrace:%n", file.getAbsolutePath()), e);
+            LOGGER.log(Level.SEVERE, String.format("We are unable to create/write file %s. See full stacktrace:%n", file.getAbsolutePath()), e);
             return false;
         }
     }
@@ -48,7 +42,7 @@ public class LuckyIO {
             }
             return sb.toString();
         } catch (IOException ioe) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                     String.format("Couldn't read from FileInputStream. See full stacktrace:%n"), ioe);
             return "";
         }

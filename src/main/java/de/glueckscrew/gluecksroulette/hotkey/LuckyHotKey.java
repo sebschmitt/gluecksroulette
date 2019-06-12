@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  * @author Sebastian Schmitt
  */
 public class LuckyHotKey {
-    private static final Logger logger = Logger.getLogger(LuckyHotKey.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(LuckyHotKey.class.getSimpleName());
 
     /**
      * Delimiter used for String serialization / deserialization
@@ -86,7 +86,7 @@ public class LuckyHotKey {
             KeyCode keyCode = KeyCode.getKeyCode(keyName);
 
             if (keyCode == null) {
-                logger.log(Level.WARNING, String.format("Invalid KeyCode %s. Ignoring", keyName));
+                LOGGER.log(Level.WARNING, String.format("Invalid KeyCode %s. Ignoring", keyName));
                 return null;
             }
 
