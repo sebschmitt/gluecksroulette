@@ -27,10 +27,10 @@ public class LuckyPhysics {
 
 
     //physics constants
-    private final static double COLLISION_REDUCTION = .7;
+    private final static double COLLISION_REDUCTION = .85;
     private final static double VERTICAL_BOUNCINESS = .5;
     private final static double WHEEL_ROTATION_REDUCTION = .025;
-    private final static double GRAVITY = .1;
+    private final static double GRAVITY = .15;
     private final static double MINIMAL_WHEEL_ROTATION = .001;
     private final static double WHEEL_MOMENTUM = .8;
     private final static double BASE_WHEEL_SPEED = 7.5;
