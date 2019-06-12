@@ -106,6 +106,11 @@ public class LuckyPhysics {
                 ball.getVelocity().x = 0;
                 ball.getVelocity().y = 0;
                 ball.getVelocity().z = 0;
+
+                if (this.spinning) {
+                    this.spinning = false;
+                    if (listener != null) listener.onBallStopped();
+                }
             }
 
 
@@ -127,27 +132,8 @@ public class LuckyPhysics {
                         }
                     } else {
                         wheel.setRotationSpeed(0);
-                        //TODO: run on ball stop, not wheel stop
-                        if (this.spinning) {
-                            this.spinning = false;
-                            if (listener != null) listener.onBallStopped();
-                        }
                     }
-            //rotate the wheel, unless its rotating slower than minimum-rotation-speed
-            if (wheel.getRotationSpeed() > MINIMAL_WHEEL_ROTATION) {
-                wheel.setRotationSpeed(wheel.getRotationSpeed() - WHEEL_ROTATION_REDUCTION);
-                if (wheel.getTransforms().isEmpty()) {
-                    wheel.getTransforms().add(new Rotate(0, 0, 0, 0, Rotate.Y_AXIS));
-                }
-                try {
-                    Rotate rotate = (Rotate) wheel.getTransforms().get(0);
-                    rotate.setAngle((rotate.getAngle() + wheel.getRotationSpeed()) % 360);
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Could not find/apply a transform in wheel, skipping! Full trace back: %n", e);
-                }
-            } else {
-                wheel.setRotationSpeed(0);
-            }
+
 
             //apply gravity
             ball.getVelocity().y += GRAVITY;

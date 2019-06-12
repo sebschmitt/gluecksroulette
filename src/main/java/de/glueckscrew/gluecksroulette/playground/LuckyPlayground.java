@@ -103,7 +103,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
 
         physics = LuckyPhysics.getInstance();
         physics.setWheel(wheel);
-        physics.setLuckyBall(ball);
+        physics.setBall(ball);
         physics.setFrame(frame);
         physics.setListener(this);
 
