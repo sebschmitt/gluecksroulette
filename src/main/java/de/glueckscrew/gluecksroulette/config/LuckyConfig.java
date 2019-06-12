@@ -56,9 +56,9 @@ public class LuckyConfig {
 
 
         for (String line : fileContent.split(KEY_SEPERATOR)) {
-            String[] parts = line.split(KEY_VALUE_SEPERATOR);
+            String[] parts = line.split(KEY_VALUE_SEPERATOR, 2);
 
-            if (parts.length != 2) {
+            if (parts.length < 2) {
                 LOGGER.warning(String.format("Config line:%n%s%n is invalid. Ignoring", line));
                 continue;
             }
