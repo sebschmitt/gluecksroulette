@@ -9,10 +9,14 @@ import lombok.Getter;
  * Frame around the wheel
  *
  * @author Sebastian Schmitt
+ *
+ * Singleton by Paul Weißer for consitency
  */
 public class LuckyFrame extends MeshView {
     private static final double ANGLE_IN_RADIAN = Math.toRadians(45);
     private static final double RESIZE_FACTOR = 1.25;
+
+    private static LuckyFrame instance;
 
     // "resolution" of our frame
     private static final int MESH_DIVISIONS = 100;
@@ -20,8 +24,20 @@ public class LuckyFrame extends MeshView {
     @Getter
     private double height;
 
+    //access to the class
+    public static LuckyFrame getInstance() {
+        if (LuckyFrame.instance == null) {
+            LuckyFrame.instance = new LuckyFrame();
+        }
+        return LuckyFrame.instance;
+    }
 
-    public LuckyFrame(double radius) {
+    private LuckyFrame() {
+
+    }
+
+
+    public void setInnerRadius(double radius) {
         double largeRadius = RESIZE_FACTOR * radius;
 
         double diff = largeRadius - radius;

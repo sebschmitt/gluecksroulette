@@ -58,7 +58,7 @@ public class LuckyPlayground extends SubScene {
         setCamera(camera);
 
         camera.setTranslateX(CAMERA_DEFAULT_X +
-                (config.getDefaultInt(LuckyConfig.Key.WINDOW_WIDTH) -   config.getInt(LuckyConfig.Key.WINDOW_WIDTH)) / 2);
+                (config.getDefaultInt(LuckyConfig.Key.WINDOW_WIDTH) - config.getInt(LuckyConfig.Key.WINDOW_WIDTH)) / 2);
         camera.setTranslateY(CAMERA_DEFAULT_Y +
                 (config.getDefaultInt(LuckyConfig.Key.WINDOW_HEIGHT) - config.getInt(LuckyConfig.Key.WINDOW_HEIGHT)) / 2);
         camera.setTranslateZ(CAMERA_DEFAULT_Z -
@@ -85,17 +85,19 @@ public class LuckyPlayground extends SubScene {
         rootGroup.getChildren().add(wheel);
         segments = new ArrayList<>();
 
-        physics = LuckyPhysics.getInstance();
-        physics.setFrame(new Group());
-        physics.setWheel(wheel);
-        physics.setLuckyBall(ball);
-
-
-        LuckyFrame frame = new LuckyFrame(WHEEL_RADIUS);
+        LuckyFrame frame = LuckyFrame.getInstance();
+        frame.setInnerRadius(WHEEL_RADIUS);
+        frame.setTranslateY(WHEEL_DEFAULT_Y - frame.getHeight() * .5);
         PhongMaterial frameMat = new PhongMaterial(LuckyStudentSegment.RED);
         frameMat.setSpecularColor(Color.WHITE);
         frame.setMaterial(frameMat);
-        //wheel.getChildren().add(frame);
+
+        physics = LuckyPhysics.getInstance();
+        physics.setWheel(wheel);
+        physics.setBall(ball);
+        physics.setFrame(frame);
+
+        rootGroup.getChildren().add(frame);
 
         LuckyCone cone = new LuckyCone(COLON_RADIUS);
         PhongMaterial coneMat = new PhongMaterial(LuckyStudentSegment.RED);
@@ -104,6 +106,8 @@ public class LuckyPlayground extends SubScene {
         wheel.getChildren().add(cone);
 
         setCurrentCourse(DUMMY_COURSE);
+
+        physics.spin();
     }
 
     public void setCurrentCourse(LuckyCourse currentCourse) {
