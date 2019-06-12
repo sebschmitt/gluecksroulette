@@ -43,7 +43,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
     private LuckyPlayground playground;
     private LuckyGUI gui;
     private LuckyConfig config;
-    private LuckyMode luckyMode;
+    private File lastCourseFile;
 
     @Override
     public void start(Stage primaryStage) {
@@ -52,7 +52,6 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         this.primaryStage = primaryStage;
 
         config = new LuckyConfig();
-        luckyMode = config.getMode(LuckyConfig.Key.MODE);
 
         playground = new LuckyPlayground(config);
         playground.setListener(this);
@@ -110,16 +109,26 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
             playground.spin();
         });
 
-        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> playground.hardReset());
-        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> playground.softReset());
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> {
+            playground.hardReset();
+            saveCourseFile();
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> {
+            playground.softReset();
+            saveCourseFile();
+        });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_REDUCE), () -> {
-            if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.CONSERVING)
+            if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.CONSERVING) {
                 playground.reduceSelected();
+                saveCourseFile();
+            }
         });
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_ENLARGE), () -> {
-            if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.CONSERVING)
+            if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.CONSERVING) {
                 playground.enlargeSelected();
+                saveCourseFile();
+            }
          });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_MODE),  () -> {
@@ -141,34 +150,24 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE), () -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Course File");
-            File file = fileChooser.showOpenDialog(primaryStage);
+            lastCourseFile = fileChooser.showOpenDialog(primaryStage);
 
-            if (file != null) {
+            if (lastCourseFile != null) {
                 try {
-                    LuckyCourse course = LuckyCourse.deserialize(LuckyIO.read(new FileInputStream(file)), file.getName());
+                    LuckyCourse course = LuckyCourse.deserialize(LuckyIO.read(new FileInputStream(lastCourseFile)), lastCourseFile.getName());
 
                     playground.setCurrentCourse(course);
                     primaryStage.setTitle(course.getIdentifier());
                 } catch (FileNotFoundException e) {
+                    lastCourseFile = null;
                     LOGGER.log(Level.SEVERE, String.format("FileNotFoundException thrown. Relying on default values%n"), e);
                 } catch (SecurityException e) {
                     LOGGER.log(Level.SEVERE, String.format("We're not allowed to read %s. Relying on default values%n",
-                            file.getAbsolutePath()), e);
+                            lastCourseFile.getAbsolutePath()), e);
+                    lastCourseFile = null;
                 }
             }
         });
-
-        // TODO: move to auto save, need to remember current course file
-        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE), () -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save Course File");
-            File file = fileChooser.showSaveDialog(primaryStage);
-
-            if (file != null) {
-                LuckyIO.write(file, playground.getCurrentCourse().serialize());
-            }
-        });
-
 
         primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) hotKeyHandler.releaseAll();
@@ -187,8 +186,16 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         hotKeyHandler.register(new LuckyHotKey(KeyCode.S), () -> camera.setTranslateZ(camera.getTranslateZ() - 10));
     }
 
+    private void saveCourseFile() {
+        if (lastCourseFile == null) return;
+        LOGGER.info("Coursefile autosave");
+        LuckyIO.write(lastCourseFile, playground.getCurrentCourse().serialize());
+    }
+
+
     @Override
     public void onSpinStop() {
+        saveCourseFile();
         LuckyStudent student = playground.getSelectedStudent();
         if (student != null)
             gui.showSelectedStudent(student);

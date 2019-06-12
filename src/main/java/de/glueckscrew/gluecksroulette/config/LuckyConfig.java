@@ -198,7 +198,6 @@ public class LuckyConfig {
         HOTKEY_HARD_RESET(LuckyHotKey.class, new LuckyHotKey(KeyCode.R, KeyCode.CONTROL)),
         HOTKEY_SOFT_RESET(LuckyHotKey.class, new LuckyHotKey(KeyCode.R)),
         HOTKEY_OPEN_COURSE_FILE(LuckyHotKey.class, new LuckyHotKey(KeyCode.O, KeyCode.CONTROL)),
-        HOTKEY_SAVE_COURSE_FILE(LuckyHotKey.class, new LuckyHotKey(KeyCode.S, KeyCode.CONTROL)),
 
         HOTKEY_FOCUS_CHANGE_TOGGLE(LuckyHotKey.class, new LuckyHotKey(KeyCode.F)),
         FOCUS_CHANGE_WINDOW_NAME(String.class, "powerpoint"),
@@ -206,7 +205,7 @@ public class LuckyConfig {
         FOCUS_CHANGE_ACTIVE(Boolean.class, true),
 
         HOTKEY_TOGGLE_MODE(LuckyHotKey.class, new LuckyHotKey(KeyCode.M)),
-        MODE(LuckyMode.class, LuckyMode.CONSERVING),
+        MODE(LuckyMode.class, LuckyMode.THINNING),
 
         HOTKEY_REDUCE(LuckyHotKey.class, new LuckyHotKey(KeyCode.MINUS)),
         HOTKEY_ENLARGE(LuckyHotKey.class, new LuckyHotKey(KeyCode.PLUS)),
