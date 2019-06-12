@@ -139,8 +139,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         if (physics.isSpinning()) return;
 
         LuckyStudent student = lastChangedSegment.getLuckyStudent();
-        lastProbabilityChange = student.getWeight();
-        currentCourse.reduce(student);
+        lastProbabilityChange = currentCourse.reduce(student);
         resizeSegments();
     }
 
@@ -149,8 +148,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         if (physics.isSpinning()) return;
 
         LuckyStudent student = lastChangedSegment.getLuckyStudent();
-        lastProbabilityChange = student.getWeight();
-        currentCourse.enlarge(student);
+        lastProbabilityChange = currentCourse.enlarge(student);
         resizeSegments();
     }
 
