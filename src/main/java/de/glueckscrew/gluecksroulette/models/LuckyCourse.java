@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Florian Dahlitz
+ * @author Florian Dahlitz, Dominique Lasserre
  */
 @Data
 public class LuckyCourse implements Cloneable {

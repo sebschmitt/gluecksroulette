@@ -20,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Sebastian Schmitt
+ * @author Sebastian Schmitt, Dominique Lasserre
  */
 public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     private static Logger logger = Logger.getLogger(LuckyPlayground.class.getSimpleName());
