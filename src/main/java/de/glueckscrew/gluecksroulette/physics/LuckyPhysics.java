@@ -25,17 +25,21 @@ public class LuckyPhysics {
     private static final Logger LOGGER = Logger.getLogger(LuckyPhysics.class.getSimpleName());
     private static LuckyPhysics instance;
 
-    private final static double COLLISION_REDUCTION = .95;
-    private final static double AIR_RESISTANCE = .999;
+
+    //physics constants
+    private final static double COLLISION_REDUCTION = .7;
     private final static double VERTICAL_BOUNCINESS = .5;
-    private final static double WHEEL_ROTATION_REDUCTION = .01;
+    private final static double WHEEL_ROTATION_REDUCTION = .025;
     private final static double GRAVITY = .1;
     private final static double MINIMAL_WHEEL_ROTATION = .001;
-    private final static double WHEEL_MOMENTUM = .5;
-    private final static double BASE_WHEEL_SPEED = 3;
-    private final static double MINIMAL_BALL_SPEED = GRAVITY * 2; //smallest speed the ball should reach is one gravity-tick
-    private final static double MAX_BALL_SPEED = 5;
+    private final static double WHEEL_MOMENTUM = .8;
+    private final static double BASE_WHEEL_SPEED = 7.5;
+    private final static double MINIMAL_BALL_SPEED = GRAVITY * 4; //smallest speed the ball should reach is one gravity-tick
+    private final static double MAX_BALL_SPEED = 30;
+    private final static double MINIMAL_BALL_STARTING_SPEED = 10;
     private final static double MAX_WHEEL_SPEED = 4 * BASE_WHEEL_SPEED;
+
+    private final static int TICKS_UNTIL_BALL_COUNTS_AS_STOPPED = 15;
 
     @Setter
     private LuckyFrame frame;
@@ -62,7 +66,6 @@ public class LuckyPhysics {
         return LuckyPhysics.instance;
     }
 
-
     // calls tick(int steps) with a value of 1
     public int tick() {
         return this.tick(1);
@@ -78,31 +81,32 @@ public class LuckyPhysics {
     public int tick(int steps) {
 
         if (steps <= 0) {
-            logger.log(Level.WARNING, "LuckyPhysics asked to tick 0 units, skipping!");
+            LOGGER.log(Level.WARNING, "LuckyPhysics asked to tick 0 units, skipping!");
             return 1;
         }
         if (ball == null) {
-            logger.log(Level.SEVERE, "No ball found, skipping!");
+            LOGGER.log(Level.SEVERE, "No ball found, skipping!");
             return 1;
         }
         if (wheel == null) {
-            logger.log(Level.SEVERE, "No wheel found, skipping!");
+            LOGGER.log(Level.SEVERE, "No wheel found, skipping!");
             return 1;
         }
         if (wheel.getChildren().isEmpty()) {
-            logger.log(Level.SEVERE, "No elements in the luckyWheel found, skipping!");
+            LOGGER.log(Level.SEVERE, "No elements in the luckyWheel found, skipping!");
             return 1;
         }
         if (frame == null) {
-            logger.log(Level.SEVERE, "No frame found, skipping!");
+            LOGGER.log(Level.SEVERE, "No frame found, skipping!");
             return 1;
         }
 
+        //execute the ticks
         for (int i = 0; i < steps; i++) {
             //check if the ball was below its min speed for 3 ticks, if it was set its velocity to 0
             //this prevents the ball from "wobbeling" forever
             cntTicksBallBelowMinSpeed = ball.getVelocity().length() <= MINIMAL_BALL_SPEED ? cntTicksBallBelowMinSpeed + 1 : 0;
-            if (cntTicksBallBelowMinSpeed >= 3) {
+            if (cntTicksBallBelowMinSpeed >= TICKS_UNTIL_BALL_COUNTS_AS_STOPPED) {
                 ball.getVelocity().x = 0;
                 ball.getVelocity().y = 0;
                 ball.getVelocity().z = 0;
@@ -122,9 +126,8 @@ public class LuckyPhysics {
             //rotate the wheel, unless its rotating slower than minimum-rotation-speed
             if (wheel.getRotationSpeed() > MINIMAL_WHEEL_ROTATION) {
                 wheel.setRotationSpeed(wheel.getRotationSpeed() - WHEEL_ROTATION_REDUCTION);
-                if (wheel.getTransforms().isEmpty()) {
+                if (wheel.getTransforms().isEmpty())
                     wheel.getTransforms().add(new Rotate(0, 0, 0, 0, Rotate.Y_AXIS));
-                }
                 try {
                     Rotate rotate = (Rotate) wheel.getTransforms().get(0);
                     rotate.setAngle((rotate.getAngle() + wheel.getRotationSpeed()) % 360);
@@ -133,12 +136,7 @@ public class LuckyPhysics {
                 }
             } else {
                 wheel.setRotationSpeed(0);
-            //TODO: run on ball stop, not wheel stop
-                        if (this.spinning) {
-                            this.spinning = false;
-                            if (listener != null) listener.onBallStopped();
-                        }
-                    }
+            }
 
 
             //apply gravity
@@ -155,13 +153,13 @@ public class LuckyPhysics {
 
             boolean collidesCenterColon = distanceCenterD <= LuckyPlayground.COLON_RADIUS && ballCollidesCenterColon();
 
-            boolean collidesOuterColon = !collidesCenterColon
+            boolean collidesFrame = !collidesCenterColon
                     && distanceCenterD >= LuckyPlayground.WHEEL_RADIUS - ball.getRadius() * 2
-                    && ballCollidesOuterColon();
-            //TODO demagicnumberfy
-            boolean collidesBorder = distanceCenterD > 520 - ball.getRadius();
+                    && ballCollidesFrame();
+            boolean collidesBorder = distanceCenterD > LuckyPlayground.WHEEL_RADIUS + frame.getHeight() - ball.getRadius();
+            System.out.println();
 
-            boolean collides = collidesBaseWheel || collidesBorder || collidesOuterColon || collidesCenterColon;
+            boolean collides = collidesBaseWheel || collidesBorder || collidesFrame || collidesCenterColon;
 
             //revert the last step
             if (collides) {
@@ -171,8 +169,8 @@ public class LuckyPhysics {
             }
 
             //execute matching intersection-function
-            if (collidesOuterColon)
-                reflectLuckyBallVelocityOnOuterColon();
+            if (collidesFrame)
+                reflectLuckyBallVelocityOnFrame();
             if (collidesBorder)
                 reflectLuckyBallVelocityOnBorder();
             if (collidesCenterColon)
@@ -189,36 +187,51 @@ public class LuckyPhysics {
                 ball.getVelocity().z *= COLLISION_REDUCTION;
                 ball.getVelocity().x *= COLLISION_REDUCTION;
             }
-        }
 
+            //under massively unlucky circumstances, the ball can clip through the frame and fall into oblivion
+            //this resets its position, so the user does not have to restart the entire program
+            if (ball.getTranslateY() - ball.getRadius() * 3 > wheel.getTranslateY()) {
+                ball.setTranslateX(0);
+                ball.setTranslateY(wheel.getTranslateY() - LuckyPlayground.COLON_RADIUS - ball.getRadius() * 5);
+                ball.setTranslateZ(0);
+            }
+        }
         return 0;
     }
 
     public int spin() {
-        //TODO: proper start
+        //generates random Values for the x- and z-velocity of the ball and set it
         Random r = new Random();
-        //r;
-        double randomValue = 2 + (MAX_BALL_SPEED - 2) * r.nextDouble();
-        //r.nextDouble(5);
+        double randomValue = MINIMAL_BALL_STARTING_SPEED + (MAX_BALL_SPEED - MINIMAL_BALL_STARTING_SPEED) * r.nextDouble();
+        boolean randomBoolean = r.nextBoolean();
 
-        //ball.getVelocity().x = randomValue;
-        //randomValue = 2 + (MAX_BALL_SPEED - 2) * r.nextDouble();
-        //ball.getVelocity().z = randomValue;
-        //System.out.println(ball.getVelocity());
+        ball.getVelocity().x = randomBoolean ? randomValue : -randomValue;
 
-        ball.setTranslateX(LuckyPlayground.WHEEL_RADIUS * .5);
-        ball.setTranslateZ(0);
-        ball.setTranslateY(460 - ball.getRadius());
-        ball.setVelocity(new Vec3d(2, 0, 2));
-//        wheel.setRotationSpeed(wheel.getRotationSpeed() + BASE_WHEEL_SPEED > MAX_WHEEL_SPEED ? MAX_WHEEL_SPEED : wheel.getRotationSpeed() + BASE_WHEEL_SPEED);
-        wheel.setRotationSpeed(wheel.getRotationSpeed() + BASE_WHEEL_SPEED);
-        LOGGER.log(Level.INFO, "Spin started!");
+        randomValue = MINIMAL_BALL_STARTING_SPEED + (MAX_BALL_SPEED - MINIMAL_BALL_STARTING_SPEED) * r.nextDouble();
+        randomBoolean = r.nextBoolean();
+        ball.getVelocity().z = randomBoolean ? randomValue : -randomValue;
+
+
+        //set fixed wheel rotation speed
+        wheel.setRotationSpeed(wheel.getRotationSpeed() + BASE_WHEEL_SPEED > MAX_WHEEL_SPEED ? MAX_WHEEL_SPEED : wheel.getRotationSpeed() + BASE_WHEEL_SPEED);
         this.spinning = true;
+        LOGGER.log(Level.INFO, "Spin started!");
         return 0;
     }
 
+    /**
+     * stops moving objects and resets the balls position
+     */
+
     public int reset() {
-        //TODO: reset
+        cntTicksBallBelowMinSpeed = TICKS_UNTIL_BALL_COUNTS_AS_STOPPED;
+        ball.setVelocity(new Vec3d(0, 0, 0));
+        ball.setTranslateX(0);
+        ball.setTranslateZ(0);
+        ball.setTranslateY(wheel.getTranslateY() - LuckyPlayground.COLON_RADIUS - ball.getRadius() * 3);
+        wheel.setRotationSpeed(0);
+        this.spinning = false;
+
         LOGGER.log(Level.INFO, "LuckyBall reset!");
         return 0;
     }
@@ -288,9 +301,9 @@ public class LuckyPhysics {
     }
 
     /**
-     * reflects ball on the outer colon, provides that its angle is 45 deg
+     * reflects ball on the frame, provides that its angle is 45 deg
      */
-    private void reflectLuckyBallVelocityOnOuterColon() {
+    private void reflectLuckyBallVelocityOnFrame() {
         //vec pointing up on the y-axis
         Vec3d tmpVec = new Vec3d(0, -1, 0);
 
@@ -340,16 +353,14 @@ public class LuckyPhysics {
     }
 
     /**
-     * calculates if the ball collides the outer colon, analog to  ballCollidesCenterColo
+     * calculates if the ball collides the frame, analog to ballCollidesCenterColon
      **/
 
-    private boolean ballCollidesOuterColon() {
+    private boolean ballCollidesFrame() {
         Vec3d upperCorner = new Vec3d(ball.getTranslateX(), 0, ball.getTranslateZ());
         upperCorner.normalize();
-        //TODO outer colon radius
-        upperCorner.mul(1.3 * LuckyPlayground.WHEEL_RADIUS);
-        //TODO outer colon height
-        upperCorner.y = wheel.getTranslateY() - 120;
+        upperCorner.mul(LuckyPlayground.WHEEL_RADIUS + frame.getHeight());
+        upperCorner.y = wheel.getTranslateY() - frame.getHeight();
 
         Vec3d lowerCorner = new Vec3d(ball.getTranslateX(), 0, ball.getTranslateZ());
         lowerCorner.normalize();
