@@ -144,30 +144,43 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     public void onBallStopped() {
         lastChangedSegment = getSegmentWithBall();
 
-        if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.THINNING)
-            reduceSelected();
+        if (config.getMode(LuckyConfig.Key.MODE) == LuckyMode.THINNING) {
+            reduceSelected(true);
+        } else if (lastChangedSegment != null) {
+            lastProbabilityChange = lastChangedSegment.getLuckyStudent().getWeight();
+        }
 
         if (listener != null)
             listener.onSpinStop();
     }
 
-    public void reduceSelected() {
-        if (lastChangedSegment == null) return;
-        if (physics.isSpinning()) return;
+    public boolean reduceSelected(boolean saveLast) {
+        if (lastChangedSegment == null) return false;
+        if (physics.isSpinning()) return false;
 
         LuckyStudent student = lastChangedSegment.getLuckyStudent();
-        lastProbabilityChange = currentCourse.reduce(student);
+        if (saveLast) {
+            lastProbabilityChange = currentCourse.reduce(student);
+        } else {
+            currentCourse.reduce(student);
+        }
         resizeSegments();
         turnSegmentToBall(lastChangedSegment);
+        return true;
     }
 
-    public void enlargeSelected() {
-        if (lastChangedSegment == null) return;
-        if (physics.isSpinning()) return;
+    public boolean enlargeSelected(boolean saveLast) {
+        if (lastChangedSegment == null) return false;
+        if (physics.isSpinning()) return false;
 
         LuckyStudent student = lastChangedSegment.getLuckyStudent();
-        lastProbabilityChange = currentCourse.enlarge(student);
+        if (saveLast) {
+            lastProbabilityChange = currentCourse.enlarge(student);
+        } else {
+            currentCourse.enlarge(student);
+        }
         resizeSegments();
+        return true;
     }
 
     public void turnSegmentToBall(LuckyStudentSegment segment) {
@@ -258,8 +271,15 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
 
         if (lastChangedSegment == null) return;
 
-        lastChangedSegment.getLuckyStudent().setWeight(lastProbabilityChange);
+        LuckyStudent student = lastChangedSegment.getLuckyStudent();
+        double oldWeight = student.getWeight();
+        boolean turnToBall = oldWeight > lastProbabilityChange;
+        lastProbabilityChange = currentCourse.setStudentWeight(student, lastProbabilityChange);
         resizeSegments();
+
+        if (turnToBall) {
+            turnSegmentToBall(lastChangedSegment);
+        }
     }
 
     public void hardReset() {

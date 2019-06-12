@@ -95,6 +95,24 @@ public class LuckyCourse implements Cloneable {
         }
     }
 
+    public double setStudentWeight(LuckyStudent student, double newWeight) {
+        double oldWeight = student.getWeight();
+        student.setWeight(newWeight);
+        if (oldWeight >= 1 && newWeight < 1) {
+            ++countStudentWeightLow;
+        } else if (newWeight >= 1 && oldWeight < 1) {
+            --countStudentWeightLow;
+        }
+        if (studentWeightLowest > newWeight) {
+            studentWeightLowest = newWeight;
+        }
+        if (countStudentWeightLow == students.size()) {
+            return normalizeWeights() * newWeight;
+        } else {
+            return newWeight;
+        }
+    }
+
     private double normalizeWeights() {
         double factor = 1/studentWeightLowest;
         for (LuckyStudent student : students) {
