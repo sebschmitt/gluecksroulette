@@ -133,12 +133,6 @@ public class LuckyGUI extends Group {
                 config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE).toPrettyString())));
 
         /*
-        Hint for saving course file
-         */
-        toggleableHints.add(createToggleableHint(String.format("Press %s to save course!",
-                config.getHotKey(LuckyConfig.Key.HOTKEY_SAVE_COURSE_FILE).toPrettyString())));
-
-        /*
         Hint to toggle mode
          */
         toggleableHints.add(createToggleableHint(String.format("Press %s to change mode!",
