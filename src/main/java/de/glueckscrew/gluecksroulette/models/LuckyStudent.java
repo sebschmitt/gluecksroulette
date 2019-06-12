@@ -1,6 +1,8 @@
 package de.glueckscrew.gluecksroulette.models;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Locale;
 import java.util.logging.Level;
@@ -17,6 +19,8 @@ public class LuckyStudent implements Cloneable {
     private static final String SERIALIZE_DELIMITER = ",";
 
     private String name;
+    @Getter
+    @Setter
     private double weight;
 
     private LuckyStudent() {

@@ -4,21 +4,27 @@ import de.glueckscrew.gluecksroulette.config.LuckyConfig;
 import de.glueckscrew.gluecksroulette.models.LuckyCourse;
 import de.glueckscrew.gluecksroulette.models.LuckyStudent;
 import de.glueckscrew.gluecksroulette.physics.LuckyPhysics;
+import de.glueckscrew.gluecksroulette.physics.LuckyPhysicsListener;
 import javafx.animation.AnimationTimer;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Rotate;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * @author Sebastian Schmitt
+ * @author Sebastian Schmitt, Dominique Lasserre
  */
-public class LuckyPlayground extends SubScene {
+public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
+    private static Logger logger = Logger.getLogger(LuckyPlayground.class.getSimpleName());
+
     public static final int WHEEL_RADIUS = 400;
     public static final double COLON_RADIUS = 0.25d * WHEEL_RADIUS;
 
@@ -30,9 +36,9 @@ public class LuckyPlayground extends SubScene {
     private static final double WHEEL_DEFAULT_Y = 470.5;
 
     private static final LuckyCourse DUMMY_COURSE = new LuckyCourse("", new ArrayList<LuckyStudent>() {{
-        add(new LuckyStudent("lucky roulette"));
-        add(new LuckyStudent("lucky roulette"));
-        add(new LuckyStudent("lucky roulette"));
+        add(new LuckyStudent("lucky student 1"));
+        add(new LuckyStudent("lucky student 2"));
+        add(new LuckyStudent("lucky student 3"));
     }});
 
     private LuckyPhysics physics;
@@ -41,8 +47,11 @@ public class LuckyPlayground extends SubScene {
 
     private List<LuckyStudentSegment> segments;
 
-    @Getter private LuckyCourse currentCourse;
-    private LuckyCourse initState;
+    @Setter
+    private LuckyPlaygroundListener listener;
+
+    @Getter
+    private LuckyCourse currentCourse;
 
     private LuckyStudentSegment lastChangedSegment;
     private double lastProbabilityChange;
@@ -94,8 +103,9 @@ public class LuckyPlayground extends SubScene {
 
         physics = LuckyPhysics.getInstance();
         physics.setWheel(wheel);
-        physics.setBall(ball);
+        physics.setLuckyBall(ball);
         physics.setFrame(frame);
+        physics.setListener(this);
 
         rootGroup.getChildren().add(frame);
 
@@ -108,9 +118,57 @@ public class LuckyPlayground extends SubScene {
         setCurrentCourse(DUMMY_COURSE);
     }
 
+    @Override
+    public void onBallStopped() {
+        lastChangedSegment = getSegmentWithBall();
+        if (lastChangedSegment == null) {
+            return;
+        }
+
+        LuckyStudent student = lastChangedSegment.getLuckyStudent();
+        lastProbabilityChange = student.getWeight();
+        currentCourse.select(student);
+        resizeSegments();
+
+        if (listener != null) {
+            listener.onSpinStop();
+        }
+    }
+
+    private LuckyStudentSegment getSegmentWithBall() {
+        // get wheel rotation
+        Rotate rotate = (Rotate) wheel.getTransforms().get(0);
+        // rotation angle along positive y
+        double wheelDeg = rotate.getAngle();
+
+        // get ball angle relative to wheel rotation
+        // add 360 so we get positive (modulus) over possibly negative remainder
+        double deg = (360 + checkBallPosition() - wheelDeg) % 360;
+
+        for (LuckyStudentSegment segment : segments) {
+            double startDeg = (segment.getOffset()) * 360;
+            double endDeg = (segment.getOffset() + segment.getStep()) * 360;
+            if (startDeg <= deg && deg < endDeg) {
+                return segment;
+            }
+        }
+        logger.log(Level.SEVERE, "no segment containing the ball found, skipping!");
+        return null;
+    }
+
+    private double checkBallPosition() {
+        double ballX = ball.getTranslateX();
+        double ballZ = ball.getTranslateZ();
+        double rad = Math.atan2(ballZ, ballX);
+        // resulting angle is from 0->pi and -pi->0, so make sure it goes the full circle 0->2pi
+        if (rad < 0) {
+            rad = 2*Math.PI + rad;
+        }
+        return 360 - Math.toDegrees(rad);  // return clockwise rotation angle
+    }
+
     public void setCurrentCourse(LuckyCourse currentCourse) {
         this.currentCourse = currentCourse;
-        this.initState = currentCourse.clone();
 
         wheel.getChildren().removeAll(segments);
         segments.clear();
@@ -161,16 +219,24 @@ public class LuckyPlayground extends SubScene {
     }
 
     public void softReset() {
+        if (physics.isSpinning()) {
+            physics.reset();
+            return;
+        }
         if (lastChangedSegment == null) return;
 
-        lastChangedSegment.getLuckyStudent().setWeight(
-                lastChangedSegment.getLuckyStudent().getWeight() + lastProbabilityChange);
-
+        lastChangedSegment.getLuckyStudent().setWeight(lastProbabilityChange);
+        resizeSegments();
     }
 
     public void hardReset() {
-        if (initState != null)
-            setCurrentCourse(initState);
+        if (physics.isSpinning()) {
+            physics.reset();
+            return;
+        }
+        lastChangedSegment = null;
+        currentCourse.resetWeights();
+        resizeSegments();
     }
 
     public void spin() {

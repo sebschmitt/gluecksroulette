@@ -6,8 +6,8 @@ import de.glueckscrew.gluecksroulette.playground.LuckyFrame;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import de.glueckscrew.gluecksroulette.playground.LuckyWheel;
 import javafx.scene.Group;
-import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Random;
@@ -45,8 +45,14 @@ public class LuckyPhysics {
     @Setter
     private LuckyBall ball;
 
+    @Setter
+    private LuckyPhysicsListener listener;
+    @Getter
+    private boolean spinning;
+
     //private constructor to prevent a second instantiation
     private LuckyPhysics() {
+        this.spinning = false;
     }
 
     //access to the class
@@ -108,6 +114,25 @@ public class LuckyPhysics {
             ball.setTranslateX(ball.getTranslateX() + ball.getVelocity().x);
             ball.setTranslateZ(ball.getTranslateZ() + ball.getVelocity().z);
 
+                    //rotate the wheel, unless its rotating slower than minimum-rotation-speed
+                    if (wheel.getRotationSpeed() > MINIMAL_WHEEL_ROTATION) {
+                        wheel.setRotationSpeed(wheel.getRotationSpeed() - WHEEL_ROTATION_REDUCTION);
+                        if (wheel.getTransforms().isEmpty())
+                            wheel.getTransforms().add(new Rotate(0, 0, 0, 0, Rotate.Y_AXIS));
+                        try {
+                            Rotate rotate = (Rotate) wheel.getTransforms().get(0);
+                            rotate.setAngle((rotate.getAngle() + wheel.getRotationSpeed()) % 360);
+                        } catch (Exception e) {
+                            logger.log(Level.SEVERE, "Could not find/apply a transform in wheel, skipping! Full trace back: %n", e);
+                        }
+                    } else {
+                        wheel.setRotationSpeed(0);
+                        //TODO: run on ball stop, not wheel stop
+                        if (this.spinning) {
+                            this.spinning = false;
+                            if (listener != null) listener.onBallStopped();
+                        }
+                    }
             //rotate the wheel, unless its rotating slower than minimum-rotation-speed
             if (wheel.getRotationSpeed() > MINIMAL_WHEEL_ROTATION) {
                 wheel.setRotationSpeed(wheel.getRotationSpeed() - WHEEL_ROTATION_REDUCTION);
@@ -198,6 +223,7 @@ public class LuckyPhysics {
 
 
         logger.log(Level.INFO, "Spin started!");
+        this.spinning = true;
         return 0;
     }
 
