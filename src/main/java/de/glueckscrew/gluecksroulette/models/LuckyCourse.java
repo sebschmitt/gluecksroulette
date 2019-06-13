@@ -50,10 +50,15 @@ public class LuckyCourse implements Cloneable {
         return new LuckyCourse(identifier, new ArrayList<>(students));
     }
 
-    public double enlarge(LuckyStudent student) {
+    public double enlarge(LuckyStudent student, int manualWeight) {
         // set new weight p for selected student to p/n, where n is size of course
         double oldWeight = student.getWeight();
-        double newWeight = oldWeight * students.size();
+        double newWeight;
+        if (manualWeight == 0) {
+            newWeight = oldWeight * students.size();
+        } else {
+            newWeight = oldWeight * manualWeight;
+        }
         student.setWeight(newWeight);
         if (newWeight >= 1 && oldWeight < 1) {
             --countStudentWeightLow;
@@ -75,10 +80,15 @@ public class LuckyCourse implements Cloneable {
         }
     }
 
-    public double reduce(LuckyStudent student) {
+    public double reduce(LuckyStudent student, int manualWeight) {
         // set new weight p for selected student to p/n, where n is size of course
         double oldWeight = student.getWeight();
-        double newWeight = oldWeight / students.size();
+        double newWeight;
+        if (manualWeight == 0) {
+            newWeight = oldWeight / students.size();
+        } else {
+            newWeight = oldWeight / manualWeight;
+        }
         student.setWeight(newWeight);
         if (oldWeight >= 1 && newWeight < 1) {
             ++countStudentWeightLow;
@@ -92,6 +102,24 @@ public class LuckyCourse implements Cloneable {
             return normalizeWeights() * oldWeight;
         } else {
             return oldWeight;
+        }
+    }
+
+    public double setStudentWeight(LuckyStudent student, double newWeight) {
+        double oldWeight = student.getWeight();
+        student.setWeight(newWeight);
+        if (oldWeight >= 1 && newWeight < 1) {
+            ++countStudentWeightLow;
+        } else if (newWeight >= 1 && oldWeight < 1) {
+            --countStudentWeightLow;
+        }
+        if (studentWeightLowest > newWeight) {
+            studentWeightLowest = newWeight;
+        }
+        if (countStudentWeightLow == students.size()) {
+            return normalizeWeights() * newWeight;
+        } else {
+            return newWeight;
         }
     }
 
