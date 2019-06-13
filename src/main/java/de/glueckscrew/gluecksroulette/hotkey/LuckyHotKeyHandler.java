@@ -24,6 +24,8 @@ public class LuckyHotKeyHandler {
                 put(KeyCode.BACK_SLASH, KeyCode.NUMBER_SIGN);
                 put(KeyCode.CLOSE_BRACKET, KeyCode.PLUS);
                 put(KeyCode.SLASH, KeyCode.MINUS);
+                put(KeyCode.Z, KeyCode.Y);
+                put(KeyCode.Y, KeyCode.Z);
             }};
         }
     }
@@ -32,6 +34,7 @@ public class LuckyHotKeyHandler {
     private HashMap<LuckyHotKey, Callback> hotKeys;
     private EventHandler<? super KeyEvent> keyPressed;
     private EventHandler<? super KeyEvent> keyReleased;
+    private Callback anyKeyCallback;
 
     public LuckyHotKeyHandler() {
         keyStates = new HashMap<>();
@@ -39,6 +42,8 @@ public class LuckyHotKeyHandler {
 
 
         keyPressed = (EventHandler<KeyEvent>) event -> {
+            if (anyKeyCallback != null) anyKeyCallback.handleHotKey();
+
             if (useTranslation && US_DE_TRANSLATION.containsKey(event.getCode()))
                 keyStates.put(US_DE_TRANSLATION.get(event.getCode()), true);
             else
@@ -53,6 +58,11 @@ public class LuckyHotKeyHandler {
                 keyStates.put(event.getCode(), false);
         };
     }
+
+    public void registerAny(Callback callback) {
+        this.anyKeyCallback = callback;
+    }
+
 
     public void releaseAll() {
         keyStates.clear();

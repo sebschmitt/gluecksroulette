@@ -2,6 +2,7 @@ package de.glueckscrew.gluecksroulette;
 
 import com.sun.javafx.PlatformUtil;
 import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import com.sun.jna.platform.win32.User32;
 import de.glueckscrew.gluecksroulette.config.LuckyConfig;
 import de.glueckscrew.gluecksroulette.gui.LuckyGUI;
@@ -44,13 +45,13 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
     private LuckyGUI gui;
     private LuckyConfig config;
     private File lastCourseFile;
+    private Timer focusChangeTimer;
 
     @Override
     public void start(Stage primaryStage) {
         LOGGER.info("start");
 
         this.primaryStage = primaryStage;
-
         config = new LuckyConfig();
 
         playground = new LuckyPlayground(config);
@@ -102,6 +103,12 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
         mainScene.setOnKeyPressed(hotKeyHandler.keyPressed());
         mainScene.setOnKeyReleased(hotKeyHandler.keyReleased());
+
+        if (Platform.isWindows())
+            hotKeyHandler.registerAny(() -> {
+                if (focusChangeTimer != null)
+                    focusChangeTimer.cancel();
+            });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP), gui::toggleHints);
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> {
@@ -202,7 +209,8 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
 
         if (PlatformUtil.isWindows() && config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE)) {
-            new Timer().schedule(new TimerTask() {
+            focusChangeTimer = new Timer();
+            focusChangeTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     User32.INSTANCE.EnumWindows((hWnd, userData) -> {
@@ -216,7 +224,6 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
                         }
                         return true;
                     }, null);
-
                 }
             }, TimeUnit.SECONDS.toMillis(config.getInt(LuckyConfig.Key.FOCUS_CHANGE_TIMEOUT_SECONDS)));
         }
