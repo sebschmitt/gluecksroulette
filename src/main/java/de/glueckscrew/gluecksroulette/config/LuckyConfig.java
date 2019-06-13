@@ -210,6 +210,8 @@ public class LuckyConfig {
         HOTKEY_REDUCE(LuckyHotKey.class, new LuckyHotKey(KeyCode.MINUS)),
         HOTKEY_ENLARGE(LuckyHotKey.class, new LuckyHotKey(KeyCode.PLUS)),
 
+        MANUAL_WEIGHT_CHANGE(Integer.class, 2),
+
 
         ;
 

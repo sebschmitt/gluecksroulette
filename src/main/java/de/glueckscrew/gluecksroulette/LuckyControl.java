@@ -119,11 +119,11 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_REDUCE), () -> {
-            if (playground.reduceSelected(false))
+            if (playground.reduceSelected(false, config.getInt(LuckyConfig.Key.MANUAL_WEIGHT_CHANGE)))
                 saveCourseFile();
         });
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_ENLARGE), () -> {
-            if (playground.enlargeSelected(false))
+            if (playground.enlargeSelected(false, config.getInt(LuckyConfig.Key.MANUAL_WEIGHT_CHANGE)))
                 saveCourseFile();
          });
 
