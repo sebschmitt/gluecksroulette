@@ -52,9 +52,6 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         LOGGER.info("start");
 
         this.primaryStage = primaryStage;
-        if (Platform.isWindows())
-            focusChangeTimer = new Timer();
-
         config = new LuckyConfig();
 
         playground = new LuckyPlayground(config);
@@ -108,7 +105,10 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         mainScene.setOnKeyReleased(hotKeyHandler.keyReleased());
 
         if (Platform.isWindows())
-            hotKeyHandler.registerAny(() -> focusChangeTimer.cancel());
+            hotKeyHandler.registerAny(() -> {
+                if (focusChangeTimer != null)
+                    focusChangeTimer.cancel();
+            });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_HELP), gui::toggleHints);
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> {
@@ -209,6 +209,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
 
         if (PlatformUtil.isWindows() && config.getBool(LuckyConfig.Key.FOCUS_CHANGE_ACTIVE)) {
+            focusChangeTimer = new Timer();
             focusChangeTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {

@@ -201,7 +201,7 @@ public class LuckyConfig {
 
         HOTKEY_FOCUS_CHANGE_TOGGLE(LuckyHotKey.class, new LuckyHotKey(KeyCode.F)),
         FOCUS_CHANGE_WINDOW_NAME(String.class, "powerpoint"),
-        FOCUS_CHANGE_TIMEOUT_SECONDS(Integer.class, 10),
+        FOCUS_CHANGE_TIMEOUT_SECONDS(Integer.class, 5),
         FOCUS_CHANGE_ACTIVE(Boolean.class, true),
 
         HOTKEY_TOGGLE_MODE(LuckyHotKey.class, new LuckyHotKey(KeyCode.M)),
