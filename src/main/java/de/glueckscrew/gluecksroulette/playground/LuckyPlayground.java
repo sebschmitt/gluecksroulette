@@ -6,6 +6,7 @@ import de.glueckscrew.gluecksroulette.models.LuckyCourse;
 import de.glueckscrew.gluecksroulette.models.LuckyStudent;
 import de.glueckscrew.gluecksroulette.physics.LuckyPhysics;
 import de.glueckscrew.gluecksroulette.physics.LuckyPhysicsListener;
+import de.glueckscrew.gluecksroulette.util.LuckyFileUtil;
 import javafx.animation.AnimationTimer;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
@@ -14,6 +15,7 @@ import javafx.scene.transform.Rotate;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +60,7 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
     private LuckyStudentSegment lastChangedSegment;
     private double lastProbabilityChange;
 
-    public LuckyPlayground(LuckyConfig config) {
+    public LuckyPlayground(LuckyConfig config, List<String> parameters) {
         super(new Group(), config.getInt(LuckyConfig.Key.WINDOW_WIDTH),
                 config.getInt(LuckyConfig.Key.WINDOW_HEIGHT), true, SceneAntialiasing.BALANCED);
 
@@ -118,7 +120,22 @@ public class LuckyPlayground extends SubScene implements LuckyPhysicsListener {
         cone.setMaterial(coneMat);
         wheel.getChildren().add(cone);
 
-        setCurrentCourse(DUMMY_COURSE);
+        File file;
+        if (parameters.size() > 0) {
+            file = new File(parameters.get(0));
+        } else {
+            file = new File(config.getString(LuckyConfig.Key.LAST_COURSE));
+        }
+        LuckyCourse course = LuckyFileUtil.loadCourse(file, LOGGER);
+
+        if (course != null) {
+            setCurrentCourse(course);
+            if (listener != null)
+                listener.onCourseNameChanged();
+            config.set(LuckyConfig.Key.LAST_COURSE, file.getAbsolutePath());
+        } else if (currentCourse == null) {
+            setCurrentCourse(DUMMY_COURSE);
+        }
 
         new AnimationTimer() {
             private long lastUpdate = 0;

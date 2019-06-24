@@ -57,9 +57,9 @@ public class LuckyConfig {
 
 
         for (String line : fileContent.split(KEY_SEPERATOR)) {
-            String[] parts = line.split(KEY_VALUE_SEPERATOR);
+            String[] parts = line.split(KEY_VALUE_SEPERATOR, 2);
 
-            if (parts.length != 2) {
+            if (parts.length < 2) {
                 LOGGER.warning(String.format("Config line:%n%s%n is invalid. Ignoring", line));
                 continue;
             }
@@ -221,6 +221,7 @@ public class LuckyConfig {
         HOTKEY_REDUCE(LuckyHotKey.class, new LuckyHotKey(KeyCode.MINUS)),
         HOTKEY_ENLARGE(LuckyHotKey.class, new LuckyHotKey(KeyCode.PLUS)),
 
+        LAST_COURSE(String.class, ""),
         MANUAL_WEIGHT_CHANGE(Integer.class, 2),
 
         HOTKEY_CAMERA_UP(LuckyHotKey.class, new LuckyHotKey(KeyCode.UP)),
@@ -243,7 +244,6 @@ public class LuckyConfig {
         CAMERA_Z(Double.class, 0d),
         CAMERA_ROT_X(Double.class, -25d),
         CAMERA_ROT_Y(Double.class, 0d),
-
 
         ;
 
