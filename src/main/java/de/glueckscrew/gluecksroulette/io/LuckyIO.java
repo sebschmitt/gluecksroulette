@@ -20,7 +20,7 @@ public class LuckyIO {
 
     public static boolean write(File file, String data) {
         try (FileOutputStream fos = new FileOutputStream(file)) {
-            byte[] bytesArray = data.getBytes();
+            byte[] bytesArray = data.getBytes(ENCODING);
 
             fos.write(bytesArray);
             fos.flush();
