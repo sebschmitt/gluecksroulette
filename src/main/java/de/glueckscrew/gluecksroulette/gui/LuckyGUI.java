@@ -126,6 +126,18 @@ public class LuckyGUI extends Group {
          */
         toggleableHints.add(createToggleableHint(String.format("Press %s for hard reset!",
                 config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET).toPrettyString())));
+
+        /*
+        Hint for hard reset
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s to enlarge segment!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_ENLARGE).toPrettyString())));
+
+        /*
+        Hint for hard reset
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s to reduce segment!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_REDUCE).toPrettyString())));
         /*
         Hint for open course file
          */
