@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +47,8 @@ public class LuckyCourse implements Cloneable {
         for (String studentData : data.split(SERIALIZE_DELIMITER)) {
             students.add(LuckyStudent.deserialize(studentData));
         }
+
+        Collections.shuffle(students);
 
         return new LuckyCourse(identifier, new ArrayList<>(students));
     }
