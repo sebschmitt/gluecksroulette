@@ -6,7 +6,6 @@ import com.sun.jna.Platform;
 import com.sun.jna.platform.win32.User32;
 import de.glueckscrew.gluecksroulette.config.LuckyConfig;
 import de.glueckscrew.gluecksroulette.gui.LuckyGUI;
-import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKey;
 import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKeyHandler;
 import de.glueckscrew.gluecksroulette.io.LuckyIO;
 import de.glueckscrew.gluecksroulette.models.LuckyCourse;
@@ -16,7 +15,6 @@ import de.glueckscrew.gluecksroulette.playground.LuckyPlaygroundListener;
 import javafx.application.Application;
 import javafx.scene.Camera;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -75,6 +73,9 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
             camera.setTranslateX(camera.getTranslateX() + (oldVal.doubleValue() - newVal.doubleValue()) / 2);
             camera.setTranslateZ(camera.getTranslateZ() - (oldVal.doubleValue() - newVal.doubleValue()) / 4);
+
+            config.set(LuckyConfig.Key.CAMERA_X, camera.getTranslateX());
+            config.set(LuckyConfig.Key.CAMERA_Z, camera.getTranslateZ());
         });
 
         mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
@@ -83,6 +84,9 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
             camera.setTranslateY(camera.getTranslateY() + (oldVal.doubleValue() - newVal.doubleValue()) / 2);
             camera.setTranslateZ(camera.getTranslateZ() - (oldVal.doubleValue() - newVal.doubleValue()) / 4);
+
+            config.set(LuckyConfig.Key.CAMERA_Y, camera.getTranslateY());
+            config.set(LuckyConfig.Key.CAMERA_Z, camera.getTranslateZ());
         });
 
 
@@ -177,16 +181,58 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         });
 
         Camera camera = playground.getCamera();
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.UP, KeyCode.SHIFT), () -> camera.getTransforms().add(new Rotate(-1, Rotate.X_AXIS)));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.DOWN, KeyCode.SHIFT), () -> camera.getTransforms().add(new Rotate(1, Rotate.X_AXIS)));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.LEFT, KeyCode.SHIFT), () -> camera.getTransforms().add(new Rotate(1, Rotate.Y_AXIS)));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.RIGHT, KeyCode.SHIFT), () -> camera.getTransforms().add(new Rotate(-1, Rotate.Y_AXIS)));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.UP), () -> camera.setTranslateY(camera.getTranslateY() - 10));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.DOWN), () -> camera.setTranslateY(camera.getTranslateY() + 10));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.LEFT), () -> camera.setTranslateX(camera.getTranslateX() - 10));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.RIGHT), () -> camera.setTranslateX(camera.getTranslateX() + 10));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.W), () -> camera.setTranslateZ(camera.getTranslateZ() + 10));
-        hotKeyHandler.register(new LuckyHotKey(KeyCode.S), () -> camera.setTranslateZ(camera.getTranslateZ() - 10));
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_TURN_UP), () -> {
+            Rotate rotate = (Rotate) camera.getTransforms().get(LuckyPlayground.CAMERA_ROT_X);
+            rotate.setAngle(rotate.getAngle() - config.getDouble(LuckyConfig.Key.CAMERA_ROT_STEP));
+            camera.getTransforms().set(LuckyPlayground.CAMERA_ROT_X, rotate);
+
+            config.set(LuckyConfig.Key.CAMERA_ROT_X, rotate.getAngle());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_TURN_DOWN), () -> {
+            Rotate rotate = (Rotate) camera.getTransforms().get(LuckyPlayground.CAMERA_ROT_X);
+            rotate.setAngle(rotate.getAngle() + config.getDouble(LuckyConfig.Key.CAMERA_ROT_STEP));
+            camera.getTransforms().set(LuckyPlayground.CAMERA_ROT_X, rotate);
+
+            config.set(LuckyConfig.Key.CAMERA_ROT_X, rotate.getAngle());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_TURN_LEFT), () -> {
+            Rotate rotate = (Rotate) camera.getTransforms().get(LuckyPlayground.CAMERA_ROT_Y);
+            rotate.setAngle(rotate.getAngle() + config.getDouble(LuckyConfig.Key.CAMERA_ROT_STEP));
+            camera.getTransforms().set(LuckyPlayground.CAMERA_ROT_Y, rotate);
+
+            config.set(LuckyConfig.Key.CAMERA_ROT_Y, rotate.getAngle());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_TURN_RIGHT), () -> {
+            Rotate rotate = (Rotate) camera.getTransforms().get(LuckyPlayground.CAMERA_ROT_Y);
+            rotate.setAngle(rotate.getAngle() - config.getDouble(LuckyConfig.Key.CAMERA_ROT_STEP));
+            camera.getTransforms().set(LuckyPlayground.CAMERA_ROT_Y, rotate);
+
+            config.set(LuckyConfig.Key.CAMERA_ROT_Y, rotate.getAngle());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_UP), () -> {
+            camera.setTranslateY(camera.getTranslateY() - config.getDouble(LuckyConfig.Key.CAMERA_MOVE_STEP));
+            config.set(LuckyConfig.Key.CAMERA_Y, camera.getTranslateY());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_DOWN), () -> {
+            camera.setTranslateY(camera.getTranslateY() + config.getDouble(LuckyConfig.Key.CAMERA_MOVE_STEP));
+            config.set(LuckyConfig.Key.CAMERA_Y, camera.getTranslateY());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_LEFT), () -> {
+            camera.setTranslateX(camera.getTranslateX() - config.getDouble(LuckyConfig.Key.CAMERA_MOVE_STEP));
+            config.set(LuckyConfig.Key.CAMERA_X, camera.getTranslateX());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_RIGHT), () -> {
+            camera.setTranslateX(camera.getTranslateX() + config.getDouble(LuckyConfig.Key.CAMERA_MOVE_STEP));
+            config.set(LuckyConfig.Key.CAMERA_X, camera.getTranslateX());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_FORWARD), () -> {
+            camera.setTranslateZ(camera.getTranslateZ() + config.getDouble(LuckyConfig.Key.CAMERA_MOVE_STEP));
+            config.set(LuckyConfig.Key.CAMERA_Z, camera.getTranslateZ());
+        });
+        hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_BACKWARD), () -> {
+            camera.setTranslateZ(camera.getTranslateZ() - config.getDouble(LuckyConfig.Key.CAMERA_MOVE_STEP));
+            config.set(LuckyConfig.Key.CAMERA_Z, camera.getTranslateZ());
+        });
     }
 
     private void saveCourseFile() {

@@ -139,6 +139,29 @@ public class LuckyGUI extends Group {
                 config.getHotKey(LuckyConfig.Key.HOTKEY_TOGGLE_MODE).toPrettyString())));
 
         /*
+        Hint to move camera
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s, %s, %s, %s, %s and %s to move camera around!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_UP).toPrettyString(),
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_DOWN).toPrettyString(),
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_LEFT).toPrettyString(),
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_RIGHT).toPrettyString(),
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_FORWARD).toPrettyString(),
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_BACKWARD).toPrettyString()
+
+        )));
+
+        /*
+        Hint to turn camera
+         */
+        toggleableHints.add(createToggleableHint(String.format("Press %s, %s, %s and %s to turn camera around!",
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_TURN_UP).toPrettyString(),
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_TURN_DOWN).toPrettyString(),
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_TURN_LEFT).toPrettyString(),
+                config.getHotKey(LuckyConfig.Key.HOTKEY_CAMERA_TURN_RIGHT).toPrettyString()
+        )));
+
+        /*
         Hint for toggling focus change
          */
         if (PlatformUtil.isWindows())

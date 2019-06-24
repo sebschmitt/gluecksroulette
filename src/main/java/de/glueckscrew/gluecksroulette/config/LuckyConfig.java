@@ -3,6 +3,7 @@ package de.glueckscrew.gluecksroulette.config;
 import de.glueckscrew.gluecksroulette.LuckyMode;
 import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKey;
 import de.glueckscrew.gluecksroulette.io.LuckyIO;
+import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import javafx.scene.input.KeyCode;
 import lombok.Getter;
 
@@ -95,6 +96,8 @@ public class LuckyConfig {
                 value = LuckyHotKey.deserialize(valueString);
             } else if (typeClass == LuckyMode.class) {
                 value = LuckyMode.valueOf(valueString);
+            } else if (typeClass == Double.class) {
+                value = Double.parseDouble(valueString);
             }
 
 
@@ -130,6 +133,14 @@ public class LuckyConfig {
 
     public int getDefaultInt(Key key) {
         return getDefault(key, Integer.class);
+    }
+
+    public double getDouble(Key key) {
+        return get(key, Double.class);
+    }
+
+    public double getDefaultDouble(Key key) {
+        return getDefault(key, Double.class);
     }
 
     public String getString(Key key) {
@@ -211,6 +222,27 @@ public class LuckyConfig {
         HOTKEY_ENLARGE(LuckyHotKey.class, new LuckyHotKey(KeyCode.PLUS)),
 
         MANUAL_WEIGHT_CHANGE(Integer.class, 2),
+
+        HOTKEY_CAMERA_UP(LuckyHotKey.class, new LuckyHotKey(KeyCode.UP)),
+        HOTKEY_CAMERA_DOWN(LuckyHotKey.class, new LuckyHotKey(KeyCode.DOWN)),
+        HOTKEY_CAMERA_LEFT(LuckyHotKey.class, new LuckyHotKey(KeyCode.LEFT)),
+        HOTKEY_CAMERA_RIGHT(LuckyHotKey.class, new LuckyHotKey(KeyCode.RIGHT)),
+        HOTKEY_CAMERA_FORWARD(LuckyHotKey.class, new LuckyHotKey(KeyCode.W)),
+        HOTKEY_CAMERA_BACKWARD(LuckyHotKey.class, new LuckyHotKey(KeyCode.S)),
+
+        HOTKEY_CAMERA_TURN_UP(LuckyHotKey.class, new LuckyHotKey(KeyCode.UP, KeyCode.SHIFT)),
+        HOTKEY_CAMERA_TURN_DOWN(LuckyHotKey.class, new LuckyHotKey(KeyCode.DOWN, KeyCode.SHIFT)),
+        HOTKEY_CAMERA_TURN_LEFT(LuckyHotKey.class, new LuckyHotKey(KeyCode.LEFT, KeyCode.SHIFT)),
+        HOTKEY_CAMERA_TURN_RIGHT(LuckyHotKey.class, new LuckyHotKey(KeyCode.RIGHT, KeyCode.SHIFT)),
+
+
+        CAMERA_MOVE_STEP(Double.class, 10d),
+        CAMERA_ROT_STEP(Double.class, 1d),
+        CAMERA_X(Double.class, (double) -LuckyPlayground.WHEEL_RADIUS),
+        CAMERA_Y(Double.class, 150d),
+        CAMERA_Z(Double.class, 0d),
+        CAMERA_ROT_X(Double.class, -25d),
+        CAMERA_ROT_Y(Double.class, 0d),
 
 
         ;
