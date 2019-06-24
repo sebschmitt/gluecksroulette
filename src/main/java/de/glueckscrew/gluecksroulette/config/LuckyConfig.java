@@ -223,6 +223,19 @@ public class LuckyConfig {
 
         MANUAL_WEIGHT_CHANGE(Integer.class, 2),
 
+        HOTKEY_CAMERA_UP(LuckyHotKey.class, new LuckyHotKey(KeyCode.UP)),
+        HOTKEY_CAMERA_DOWN(LuckyHotKey.class, new LuckyHotKey(KeyCode.DOWN)),
+        HOTKEY_CAMERA_LEFT(LuckyHotKey.class, new LuckyHotKey(KeyCode.LEFT)),
+        HOTKEY_CAMERA_RIGHT(LuckyHotKey.class, new LuckyHotKey(KeyCode.RIGHT)),
+        HOTKEY_CAMERA_FORWARD(LuckyHotKey.class, new LuckyHotKey(KeyCode.W)),
+        HOTKEY_CAMERA_BACKWARD(LuckyHotKey.class, new LuckyHotKey(KeyCode.S)),
+
+        HOTKEY_CAMERA_TURN_UP(LuckyHotKey.class, new LuckyHotKey(KeyCode.UP, KeyCode.SHIFT)),
+        HOTKEY_CAMERA_TURN_DOWN(LuckyHotKey.class, new LuckyHotKey(KeyCode.DOWN, KeyCode.SHIFT)),
+        HOTKEY_CAMERA_TURN_LEFT(LuckyHotKey.class, new LuckyHotKey(KeyCode.LEFT, KeyCode.SHIFT)),
+        HOTKEY_CAMERA_TURN_RIGHT(LuckyHotKey.class, new LuckyHotKey(KeyCode.RIGHT, KeyCode.SHIFT)),
+
+
         CAMERA_MOVE_STEP(Double.class, 10d),
         CAMERA_ROT_STEP(Double.class, 1d),
         CAMERA_X(Double.class, (double) -LuckyPlayground.WHEEL_RADIUS),
