@@ -10,6 +10,7 @@ import de.glueckscrew.gluecksroulette.hotkey.LuckyHotKeyHandler;
 import de.glueckscrew.gluecksroulette.io.LuckyIO;
 import de.glueckscrew.gluecksroulette.models.LuckyCourse;
 import de.glueckscrew.gluecksroulette.models.LuckyStudent;
+import de.glueckscrew.gluecksroulette.physics.LuckyPhysics;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlayground;
 import de.glueckscrew.gluecksroulette.playground.LuckyPlaygroundListener;
 import de.glueckscrew.gluecksroulette.util.LuckyFileUtil;
@@ -135,6 +136,8 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> {
+            if (LuckyPhysics.getInstance().isSpinning()) return;
+
             playground.hardReset();
             saveCourseFile();
         });
@@ -144,10 +147,14 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_REDUCE), () -> {
+            if (LuckyPhysics.getInstance().isSpinning()) return;
+
             if (playground.reduceSelected(false, config.getInt(LuckyConfig.Key.MANUAL_WEIGHT_CHANGE)))
                 saveCourseFile();
         });
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_ENLARGE), () -> {
+            if (LuckyPhysics.getInstance().isSpinning()) return;
+
             if (playground.enlargeSelected(false, config.getInt(LuckyConfig.Key.MANUAL_WEIGHT_CHANGE)))
                 saveCourseFile();
          });
@@ -169,6 +176,8 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
             );
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE), () -> {
+            if (LuckyPhysics.getInstance().isSpinning()) return;
+
             FileChooser fileChooser = new FileChooser();
             if (lastCourseFile != null)
                 fileChooser.setInitialDirectory(lastCourseFile.getParentFile());
@@ -186,6 +195,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         });
 
 
+        // make sure that all key states are released on focus lost
         primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) hotKeyHandler.releaseAll();
         });
