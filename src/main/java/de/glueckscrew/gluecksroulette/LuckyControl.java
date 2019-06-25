@@ -50,7 +50,23 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         this.primaryStage = primaryStage;
         config = new LuckyConfig();
 
-        playground = new LuckyPlayground(config, getParameters().getRaw());
+        if (getParameters().getRaw().size() > 0) {
+            lastCourseFile = new File(getParameters().getRaw().get(0));
+        } else {
+            if (!config.getString(LuckyConfig.Key.LAST_COURSE).isEmpty())
+                lastCourseFile = new File(config.getString(LuckyConfig.Key.LAST_COURSE));
+        }
+        LuckyCourse course = null;
+        if (lastCourseFile != null)
+            course = LuckyFileUtil.loadCourse(lastCourseFile, LOGGER);
+
+        if (course != null) {
+            config.set(LuckyConfig.Key.LAST_COURSE, lastCourseFile.getAbsolutePath());
+        } else  {
+            lastCourseFile = null;
+        }
+
+        playground = new LuckyPlayground(config, course);
         playground.setListener(this);
         gui = new LuckyGUI(playground, config);
 
@@ -154,6 +170,8 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE), () -> {
             FileChooser fileChooser = new FileChooser();
+            if (lastCourseFile != null)
+                fileChooser.setInitialDirectory(lastCourseFile.getParentFile());
             fileChooser.setTitle("Open Course File");
             lastCourseFile = fileChooser.showOpenDialog(primaryStage);
 
