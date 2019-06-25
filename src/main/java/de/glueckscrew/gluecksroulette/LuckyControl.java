@@ -42,6 +42,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
     private LuckyConfig config;
     private File lastCourseFile;
     private Timer focusChangeTimer;
+    private boolean spinning = false;
 
     @Override
     public void start(Stage primaryStage) {
@@ -116,22 +117,31 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SPIN), () -> {
             gui.fadeOutSelectedStudent();
             playground.spin();
+            spinning = true;
         });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_HARD_RESET), () -> {
+            if (spinning) return;
+
             playground.hardReset();
             saveCourseFile();
         });
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_SOFT_RESET), () -> {
+            if (spinning) return;
+
             playground.softReset();
             saveCourseFile();
         });
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_REDUCE), () -> {
+            if (spinning) return;
+
             if (playground.reduceSelected(false, config.getInt(LuckyConfig.Key.MANUAL_WEIGHT_CHANGE)))
                 saveCourseFile();
         });
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_ENLARGE), () -> {
+            if (spinning) return;
+
             if (playground.enlargeSelected(false, config.getInt(LuckyConfig.Key.MANUAL_WEIGHT_CHANGE)))
                 saveCourseFile();
          });
@@ -153,6 +163,8 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
             );
 
         hotKeyHandler.register(config.getHotKey(LuckyConfig.Key.HOTKEY_OPEN_COURSE_FILE), () -> {
+            if (spinning) return;
+
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Course File");
             lastCourseFile = fileChooser.showOpenDialog(primaryStage);
@@ -168,6 +180,7 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
         });
 
 
+        // make sure that all key states are released on focus lost
         primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) hotKeyHandler.releaseAll();
         });
@@ -237,6 +250,8 @@ public class LuckyControl extends Application implements LuckyPlaygroundListener
 
     @Override
     public void onSpinStop() {
+        spinning = false;
+
         saveCourseFile();
         LuckyStudent student = playground.getSelectedStudent();
         if (student != null)
