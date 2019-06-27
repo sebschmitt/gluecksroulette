@@ -3,7 +3,7 @@
 ## Description
 
 The Gluecksroulette (*engl. Roulette of Fortune*) is a product resulting from a university project from 2019.
-The basic idea was to create a 3D-version of an existing wheel of Fortune, which allows a professor at the university to randomly select a student of his course.
+The basic idea was to create a 3D-version of an existing wheel of fortune, which allows a professor at the university to randomly select a student of his course.
 
 
 version 1.0
@@ -20,13 +20,13 @@ $ mvn package
 
 ## Run And Have Fun
 
-If you run the JAR, you get something like this:
+If you run the JAR, you will get something like this:
 
 ![Starting Screen](img/img_1.png)
 
 You can display the help menu by pressing F1.
 Furthermore, you can customize the mapped hot keys by modifying the `config.luck`, which is generated at the first program start.
-Additionally, you can load different courses (consisting of students/persons), which is explaining in more detail in the following section.
+Additionally, you can load different courses (consisting of students/persons), which is explained in more detail in the following section.
 
 
 ### Course Files
